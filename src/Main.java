@@ -85,10 +85,12 @@ public class Main {
                     boolean adminSesion = auth.iniciarSesion(adminEmail, adminPass);
                     if (adminSesion) {
                         System.out.println("Inicio de sesión de administrador exitoso. Accediendo al menú de administración...");
-                        // Aquí deberías llamar al menú de administración
-                        // Por ejemplo:
-                        // MenuAdmin menuAdmin = new MenuAdmin(auth, sc, adminEmail);
-                        // menuAdmin.mostrarMenu();
+                        sistema.autenticacion.AuthService authService = new sistema.autenticacion.AuthService();
+                        sistema.autenticacion.AdminCLI menuAdmin = new sistema.autenticacion.AdminCLI(
+                            authService, // IGestionarCuenta
+                            sc
+                        );
+                        menuAdmin.mostrarMenu();
                     } else {
                         System.out.println("Error: credenciales de administrador incorrectas o usuario bloqueado.");
                     }
