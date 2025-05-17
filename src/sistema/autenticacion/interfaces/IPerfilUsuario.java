@@ -1,4 +1,4 @@
-package negocio.autenticacion.interfaces;
+package sistema.autenticacion.interfaces;
 
 public interface IPerfilUsuario {
 
