@@ -40,15 +40,45 @@ public class AuthCLI {
                     }
                     break;
                 case "2":
-                    System.out.print("Campo a modificar: ");
-                    String campo = sc.nextLine();
-                    System.out.print("Nuevo valor: ");
-                    String nuevoValor = sc.nextLine();
-                    boolean modificado = perfil.modificarInformacion(usuarioEmail, campo, nuevoValor);
-                    if (modificado) {
-                        System.out.println("Información modificada correctamente.");
-                    } else {
-                        System.out.println("No se pudo modificar la información.");
+                    while (true) {
+                        System.out.println("\n--- Selecciona el campo a modificar ---");
+                        System.out.println("1. Nombre");
+                        System.out.println("2. Apellidos");
+                        System.out.println("3. Teléfono");
+                        System.out.println("4. Dirección");
+                        System.out.println("0. Volver");
+                        String campoOpcion = sc.nextLine();
+                        String campo = null;
+                        switch (campoOpcion) {
+                            case "1":
+                                campo = "nombre";
+                                break;
+                            case "2":
+                                campo = "apellidos";
+                                break;
+                            case "3":
+                                campo = "telefono";
+                                break;
+                            case "4":
+                                campo = "direccion";
+                                break;
+                            case "0":
+                                campo = null;
+                                break;
+                            default:
+                                System.out.println("Opción no válida.");
+                                continue;
+                        }
+                        if (campo == null) break;
+                        System.out.print("Nuevo valor para " + campo + ": ");
+                        String nuevoValor = sc.nextLine();
+                        boolean modificado = perfil.modificarInformacion(usuarioEmail, campo, nuevoValor);
+                        if (modificado) {
+                            System.out.println("Información modificada correctamente.");
+                        } else {
+                            System.out.println("No se pudo modificar la información.");
+                        }
+                        break;
                     }
                     break;
                 case "3":

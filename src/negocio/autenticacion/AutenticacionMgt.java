@@ -14,8 +14,9 @@ public abstract class AutenticacionMgt implements IRegistro, ISesion, IGestionar
     public abstract boolean verificarCuentaNoExiste(String correo);
     public abstract void crearCuenta(String nombre, String apellidos, String correo, int telefono, String direccion, String tipoUsuario, byte[] foto, String contraseña);
     // Métodos de inicio de sesión
-    public abstract boolean iniciarSesion(String email, String contrasena);
-    public abstract boolean comprobarCredenciales(String email, String contrasena);
+    // Cambiar la firma de iniciarSesion para que devuelva String (tipo de usuario)
+    public abstract String iniciarSesion(String email, String contrasena);
+    public abstract String comprobarCredenciales(String email, String contrasena);
     public abstract void recuperarContrasena(String correo);
     public abstract boolean cambiarContrasena(String correo, String passwordActual, String passwordNueva);
     public abstract boolean verificarContrasena(String correo, String password);

@@ -1,1 +1,28 @@
-[]
+[
+  {
+    "apellidos": "loco",
+    "bloqueadoHasta": null,
+    "tipo": "Administrador",
+    "sesionActiva": true,
+    "foto": null,
+    "direccion": "calle",
+    "contrasena": "1234",
+    "telefono": 43434345,
+    "nombre": "organizado",
+    "email": "org@gmail.com",
+    "intentosFallidos": 0
+  },
+  {
+    "apellidos": "guardiola",
+    "bloqueadoHasta": null,
+    "tipo": "Usuario",
+    "sesionActiva": true,
+    "foto": null,
+    "direccion": "calle",
+    "contrasena": "1234",
+    "telefono": 334234231,
+    "nombre": "pep",
+    "email": "a@gmail.com",
+    "intentosFallidos": 0
+  }
+]

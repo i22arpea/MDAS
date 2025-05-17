@@ -52,6 +52,10 @@ public class AutenticacionMgr extends AutenticacionMgt {
 
     @Override
     public void crearCuenta(String nombre, String apellidos, String correo, int telefono, String direccion, String tipoUsuario, byte[] foto, String contrasena) {
+        if (!verificarDatosCuenta(correo, telefono, direccion, contrasena)) {
+            System.out.println("Datos de cuenta inválidos o el correo ya está registrado. No se puede crear la cuenta.");
+            return;
+        }
         JSONObject obj = new JSONObject();
         obj.put("nombre", nombre);
         obj.put("apellidos", apellidos);
@@ -60,7 +64,7 @@ public class AutenticacionMgr extends AutenticacionMgt {
         obj.put("direccion", direccion);
         obj.put("tipo", tipoUsuario);
         obj.put("foto", foto != null ? java.util.Base64.getEncoder().encodeToString(foto) : JSONObject.NULL);
-        obj.put("contraseña", contrasena);
+        obj.put("contrasena", contrasena);
         obj.put("intentosFallidos", 0);
         obj.put("bloqueadoHasta", JSONObject.NULL);
         obj.put("sesionActiva", false);
@@ -84,35 +88,34 @@ public class AutenticacionMgr extends AutenticacionMgt {
 
     // Parte de ISesion
 
+    /**
+     * Devuelve el tipo de usuario si las credenciales son correctas, o null si no lo son.
+     */
     @Override
-    public boolean iniciarSesion(String email, String contrasena) {
-        return comprobarCredenciales(email, contrasena);
-    }
-
-    @Override
-    public boolean comprobarCredenciales(String email, String contrasena) {
+    public String comprobarCredenciales(String email, String contrasena) {
         try {
             String contenido = new String(Files.readAllBytes(Paths.get(RUTA_JSON)));
             JSONArray array = new JSONArray(contenido);
-            boolean encontrado = false;
             for (int i = 0; i < array.length(); i++) {
                 JSONObject usuario = array.getJSONObject(i);
                 if (usuario.getString("email").equalsIgnoreCase(email)) {
-                    encontrado = true;
                     if (!usuario.isNull("bloqueadoHasta") && usuario.get("bloqueadoHasta") != null) {
                         long tiempoBloqueo = usuario.getLong("bloqueadoHasta");
                         if (new Date().getTime() < tiempoBloqueo) {
                             System.out.println("Usuario bloqueado hasta: " + new Date(tiempoBloqueo));
-                            return false;
+                            return null;
                         }
                     }
-                    if (usuario.getString("contraseña").equals(contrasena)) {
+                    if (usuario.getString("contrasena").equals(contrasena)) {
                         usuario.put("intentosFallidos", 0);
                         usuario.put("sesionActiva", true);
-                        System.out.println("Inicio de sesión exitoso.");
                         array.put(i, usuario);
                         guardarJSON(array);
-                        return true;
+                        if (usuario.has("tipo")) {
+                            return usuario.getString("tipo");
+                        } else {
+                            return "Usuario";
+                        }
                     } else {
                         int fallos = usuario.getInt("intentosFallidos") + 1;
                         usuario.put("intentosFallidos", fallos);
@@ -122,17 +125,21 @@ public class AutenticacionMgr extends AutenticacionMgt {
                         }
                         array.put(i, usuario);
                         guardarJSON(array);
-                        return false;
+                        return null;
                     }
                 }
             }
-            if (!encontrado) {
-                System.out.println("Usuario no encontrado.");
-            }
+            System.out.println("Usuario no encontrado.");
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return false;
+        return null;
+    }
+
+    // Cambiar la firma de iniciarSesion para que devuelva String (tipo de usuario)
+    @Override
+    public String iniciarSesion(String email, String contrasena) {
+        return comprobarCredenciales(email, contrasena);
     }
 
 
@@ -173,7 +180,7 @@ public class AutenticacionMgr extends AutenticacionMgt {
                 if (obj.getString("email").equalsIgnoreCase(correo)) {
                     // Usar el método verificarContraseña en vez de comparar directamente
                     if (verificarContrasena(correo, passwordActual)) {
-                        obj.put("contraseña", passwordNueva);
+                        obj.put("contrasena", passwordNueva);
                         array.put(i, obj);
                         encontrado = true;
                         guardarJSON(array);
@@ -203,7 +210,7 @@ public class AutenticacionMgr extends AutenticacionMgt {
             for (int i = 0; i < array.length(); i++) {
                 JSONObject obj = array.getJSONObject(i);
                 if (obj.getString("email").equalsIgnoreCase(correo)) {
-                    return obj.getString("contraseña").equals(password);
+                    return obj.getString("contrasena").equals(password);
                 }
             }
         } catch (IOException e) {
@@ -324,7 +331,15 @@ public class AutenticacionMgr extends AutenticacionMgt {
             for (int i = 0; i < array.length(); i++) {
                 JSONObject obj = array.getJSONObject(i);
                 if (obj.getString("email").equalsIgnoreCase(email)) {
-                    return obj.toString(2);
+                    JSONObject editable = new JSONObject();
+                    editable.put("nombre", obj.optString("nombre"));
+                    editable.put("apellidos", obj.optString("apellidos"));
+                    editable.put("telefono", obj.optInt("telefono"));
+                    editable.put("direccion", obj.optString("direccion"));
+                    if (!obj.isNull("foto")) {
+                        editable.put("foto", obj.get("foto"));
+                    }
+                    return editable.toString(2);
                 }
             }
         } catch (IOException e) {
@@ -365,4 +380,6 @@ public class AutenticacionMgr extends AutenticacionMgt {
             e.printStackTrace();
         }
     }
+
+   
 }

@@ -13,8 +13,7 @@ public class Main {
             System.out.println("1. Registrar Cliente");
             System.out.println("2. Registrar Organizador");
             System.out.println("3. Iniciar Sesión");
-            System.out.println("4. Iniciar Sesión como Administrador");
-            System.out.println("5. Recuperar Contraseña");
+            System.out.println("4. Recuperar Contraseña");
             System.out.println("0. Salir");
             String opcion = sc.nextLine();
 
@@ -60,30 +59,10 @@ public class Main {
                     email = sc.nextLine();
                     System.out.print("Contraseña: ");
                     pass = sc.nextLine();
-                    boolean sesionIniciada = auth.iniciarSesion(email, pass);
-                    if (sesionIniciada) {
-                        System.out.println("Inicio de sesión exitoso. Accediendo al menú de perfil...");
-                        // Llamada al menú de perfil pasando el email autenticado
-                        sistema.autenticacion.AuthService authService = new sistema.autenticacion.AuthService();
-                        sistema.autenticacion.AuthCLI menuPerfil = new sistema.autenticacion.AuthCLI(
-                            authService, // IPerfilUsuario
-                            authService, // IGestionarCuenta
-                            sc,
-                            email // email autenticado
-                        );
-                        menuPerfil.mostrarMenu();
-                    } else {
+                    String tipoUsuario = auth.iniciarSesion(email, pass);
+                    if (tipoUsuario == null) {
                         System.out.println("Error: credenciales incorrectas o usuario bloqueado.");
-                    }
-                    break;
-
-                case "4":
-                    System.out.print("Email de administrador: ");
-                    String adminEmail = sc.nextLine();
-                    System.out.print("Contraseña: ");
-                    String adminPass = sc.nextLine();
-                    boolean adminSesion = auth.iniciarSesion(adminEmail, adminPass);
-                    if (adminSesion) {
+                    } else if (tipoUsuario.equalsIgnoreCase("Administrador")) {
                         System.out.println("Inicio de sesión de administrador exitoso. Accediendo al menú de administración...");
                         sistema.autenticacion.AuthService authService = new sistema.autenticacion.AuthService();
                         sistema.autenticacion.AdminCLI menuAdmin = new sistema.autenticacion.AdminCLI(
@@ -92,11 +71,19 @@ public class Main {
                         );
                         menuAdmin.mostrarMenu();
                     } else {
-                        System.out.println("Error: credenciales de administrador incorrectas o usuario bloqueado.");
+                        System.out.println("Inicio de sesión exitoso. Accediendo al menú de perfil...");
+                        sistema.autenticacion.AuthService authService = new sistema.autenticacion.AuthService();
+                        sistema.autenticacion.AuthCLI menuPerfil = new sistema.autenticacion.AuthCLI(
+                            authService, // IPerfilUsuario
+                            authService, // IGestionarCuenta
+                            sc,
+                            email // email autenticado
+                        );
+                        menuPerfil.mostrarMenu();
                     }
                     break;
 
-                case "5":
+                case "4":
                     System.out.print("Email: ");
                     String emailRec = sc.nextLine();
                     sistema.autenticacion.AuthService authServiceRec = new sistema.autenticacion.AuthService();

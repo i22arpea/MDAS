@@ -21,7 +21,7 @@ public class AuthService implements IRegistro, ISesion, IPerfilUsuario, IGestion
 
     //Sesion
     @Override
-    public boolean iniciarSesion(String usuario, String contraseña) {
+    public String iniciarSesion(String usuario, String contraseña) {
         return mgr.iniciarSesion(usuario, contraseña);
     }
 

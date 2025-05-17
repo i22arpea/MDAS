@@ -6,9 +6,9 @@ public interface ISesion {
      *
      * @param usuario     El nombre de usuario o correo electrónico del usuario.
      * @param contraseña  La contraseña del usuario.
-     * @return true si la sesión se inicia correctamente, false en caso contrario.
+     * @return El tipo de usuario si la sesión se inicia correctamente ("Administrador", "Organizador", "Usuario", etc.), null en caso contrario.
      */
-    boolean iniciarSesion(String usuario, String contraseña);
+    String iniciarSesion(String usuario, String contraseña);
 
     /**
      * Recupera la contraseña del usuario a través de su correo electrónico.
