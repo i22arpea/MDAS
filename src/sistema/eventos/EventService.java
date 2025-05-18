@@ -6,6 +6,24 @@ import sistema.eventos.interfaces.IRealizarEvento;
 import sistema.eventos.interfaces.ITramitarDevolucion;
 
 public class EventService implements IRealizarEvento, IComprarEntrada, IGestionarVenta, ITramitarDevolucion {
-    // Implement all methods from the interfaces here
+    //instancia del mgr que se debe llamar
+
+    //realizarEvento
+
+    //ComprarEntrada
+
+    //gestionarVenta
+
+    //tramitardevolucion
     
 }
+
+
+/* 
+
+CLASES A IMPLEMENTAR:
+
+Evento
+Entrada
+
+*/
