@@ -1,6 +1,7 @@
 package modelo;
 
 import java.util.Date;
+import org.json.JSONObject;
 
 public abstract class Usuario {
     protected String email;
@@ -36,4 +37,6 @@ public abstract class Usuario {
     public boolean isSesionActiva() {
         return sesionActiva;
     }
+
+        public abstract JSONObject toJSONObject();
 }

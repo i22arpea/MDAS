@@ -1,5 +1,8 @@
 package modelo;
 
+import org.json.JSONObject;
+
+
 public class Organizador extends Usuario {
     private String nombreEmpresa;
     private String numeroContacto;
@@ -16,5 +19,16 @@ public class Organizador extends Usuario {
 
     public String getNumeroContacto() {
         return numeroContacto;
+    }
+
+     @Override
+    public JSONObject toJSONObject() {
+        JSONObject obj = new JSONObject();
+        obj.put("tipo", "organizador");
+        obj.put("email", this.email);
+        obj.put("contrasena", this.contraseña);
+        obj.put("nombreEmpresa", this.nombreEmpresa);
+        obj.put("numeroContacto", this.numeroContacto);
+        return obj;
     }
 }

@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
+import modelo.Usuario;
+import modelo.UsuarioFactory;
 
 public class AutenticacionMgr extends AutenticacionMgt {
     private static final String RUTA_JSON = "usuarios.json";
@@ -48,6 +50,35 @@ public class AutenticacionMgr extends AutenticacionMgt {
             e.printStackTrace();
         }
         return true;
+    }
+
+    public Usuario obtenerUsuario(String email) {
+    try {
+        String contenido = new String(Files.readAllBytes(Paths.get(RUTA_JSON)));
+        JSONArray array = new JSONArray(contenido);
+        for (int i = 0; i < array.length(); i++) {
+            JSONObject obj = array.getJSONObject(i);
+            if (obj.getString("email").equalsIgnoreCase(email)) {
+                return UsuarioFactory.crearUsuarioDesdeJSON(obj);
+            }
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+    return null;
+    }
+
+    public void guardarUsuario(Usuario usuario) {
+    try {
+        String contenido = new String(Files.readAllBytes(Paths.get(RUTA_JSON)));
+        JSONArray array = new JSONArray(contenido);
+        array.put(usuario.toJSONObject());
+        try (FileWriter file = new FileWriter(RUTA_JSON)) {
+            file.write(array.toString(2));
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
     }
 
     @Override
