@@ -1,6 +1,12 @@
 package sistema.eventos;
 
 import java.util.Scanner;
+import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
+
+import modelo.Entrada;
+import modelo.Evento;
 
 import sistema.eventos.interfaces.IComprarEntrada;
 import sistema.eventos.interfaces.IGestionarVenta;
@@ -13,13 +19,15 @@ public class EventCLI {
     private final IGestionarVenta gestionarVenta;
     private final ITramitarDevolucion tramitarDevolucion;
     private final Scanner sc;
+    private final String email;
 
-    public EventCLI(IRealizarEvento realizarEvento, IComprarEntrada comprarEntrada, IGestionarVenta gestionarVenta, ITramitarDevolucion tramitarDevolucion, Scanner sc) {
+    public EventCLI(IRealizarEvento realizarEvento, IComprarEntrada comprarEntrada, IGestionarVenta gestionarVenta, ITramitarDevolucion tramitarDevolucion, Scanner sc, String email) {
         this.realizarEvento = realizarEvento;
         this.comprarEntrada = comprarEntrada;
         this.gestionarVenta = gestionarVenta;
         this.tramitarDevolucion = tramitarDevolucion;
         this.sc = sc;
+        this.email = email;
     }
 
     public void mostrarMenu() {
@@ -47,25 +55,28 @@ public class EventCLI {
                         case "1":
 
                             System.out.println("Titulo: ");
-                            titulo = sc.nextLine();
+                            String titulo = sc.nextLine();
 
                             System.out.println("Categoria: ");
-                            categoria = sc.nextLine();
+                            String categoria = sc.nextLine();
 
                             System.out.println("Direccion: ");
-                            direccion = sc.nextLine();
+                            String direccion = sc.nextLine();
 
                             System.out.println("Politicas: ");
-                            politicas = sc.nextLine();
+                            String politicas = sc.nextLine();
 
-                            fechaRealizacion = new Date();
-                            entradas = new ArrayList<>();
+                            Date fechaRealizacion = new Date();
+                            List<Entrada> entradas = new ArrayList<>();
 
                             realizarEvento.crearEvento(titulo, fechaRealizacion, categoria, entradas, direccion, politicas);
 
                             break;
 
                         case "2":
+
+                            System.out.println("Introduzca el id del evento a modificar: ");
+                            int idEvento = Integer.parseInt(sc.nextLine());
 
                             System.out.println("Titulo: ");
                             titulo = sc.nextLine();
@@ -80,12 +91,12 @@ public class EventCLI {
                             politicas = sc.nextLine();
 
                             System.out.println("Precio evento: ");
-                            maxPrice = sc.nextLine();
+                            double maxPrice = Double.parseDouble(sc.nextLine());
 
                             fechaRealizacion = new Date();
                             entradas = new ArrayList<>();
 
-                            realizarEvento.modificarEvento(titulo, fechaRealizacion, categoria, entradas, direccion, politicas, maxPrice);
+                            realizarEvento.modificarEvento(idEvento, titulo, fechaRealizacion, categoria, entradas, direccion, politicas, maxPrice);
 
                             break;
 
@@ -98,7 +109,7 @@ public class EventCLI {
                         case "4":
 
                             System.out.println("Introduzca el nombre del evento a buscar: ");
-                            nombre = sc.nextLine();
+                            String nombre = sc.nextLine();
 
                             realizarEvento.buscarEvento(nombre);
 
@@ -114,7 +125,7 @@ public class EventCLI {
                     }
 
                     break;
-                case "2":
+                case "2":/*
                     // ...call comprarEntrada...
                     System.out.println("\n--- Menú comprarEntrada ---");
                     System.out.println("1. comprobarEntradas");
@@ -156,9 +167,9 @@ public class EventCLI {
                             System.out.println("Opción no válida");
 
                     }
-
+*/
                     break;
-                case "3":
+                case "3":/*
                     // ...call gestionarVenta...
                     System.out.println("\n--- Menú GestionarVenta ---");
                     System.out.println("1. mostrarEntradasAdquiridas");
@@ -219,9 +230,9 @@ public class EventCLI {
                             System.out.println("Opción no válida");
 
                     }
-
+*/
                     break;
-                case "4":
+                case "4":/*
                     // ...call tramitarDevolucion...
                     System.out.println("\n--- Menú TramitarDevolución ---");
                     System.out.println("1. procesarDevolución");
@@ -259,7 +270,7 @@ public class EventCLI {
                             System.out.println("Opción no válida");
 
                     }
-
+*/
                     break;
                 case "0":
                     return;

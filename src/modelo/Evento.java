@@ -26,7 +26,7 @@ public class Evento{
         this.categoria = categoria;
         this.direccion = direccion;
         this.politicas = politicas;
-        this.max_price = max_price;
+        this.maxPrice = maxPrice;
         this.entradas = new ArrayList<>(); //inicializamos la lista vacia
 
     }
@@ -148,11 +148,11 @@ public class Evento{
 
     //METODO PARA GENERAR UNA LISTA DE ENTRADAS VACIAS Y ASIGNARLA AL EVENTO
 
-    public boolean listaEntradas(int numeroEntradas, String tipoEntrada){
+    public boolean listaEntradas(int numeroEntradas, String tipoEntrada, double precio){ //crea una lista de entradas vacia y la asigna al evento
 
         for (int i = 0 ; i < numeroEntradas ; i++){
 
-            nuevaEntrada = new Entrada(i, this.idEvento, tipoEntrada); //creamos la entrada
+            Entrada nuevaEntrada = new Entrada(i, this.idEvento, tipoEntrada, precio); //creamos la entrada
 
             this.entradas.add(nuevaEntrada); //la introducimos en el arraylist
 

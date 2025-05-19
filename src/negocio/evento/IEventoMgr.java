@@ -9,8 +9,13 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.text.SimpleDateFormat;
 
-public class IEventoMgr {
+import modelo.Entrada;
+import sistema.eventos.interfaces.IRealizarEvento;
+import java.util.Date;
+
+public class IEventoMgr implements IRealizarEvento {
 
     private static final String USUARIO_JSON = "usuarios.json";
     private static final String EVENTOS_JSON = "eventos.json";
@@ -33,6 +38,7 @@ public class IEventoMgr {
     }
 
     //IComprarEntrada
+    /*
     public boolean comprobarEntradas(List<Entrada> entradasAdquirir) {
         for (Entrada entrada : entradasAdquirir) {
             if ("Vendida".equalsIgnoreCase(entrada.getEstadoEntrada()) || !entrada.getCorreo().isEmpty()) {
@@ -52,8 +58,9 @@ public class IEventoMgr {
         guardarEntradaEnJson(entradaAdquirida);
         return entradaAdquirida;
     }
-
-    //IGestionarCuenta
+*/
+    //IGestionarVenta
+    /*
     public String mostrarEntradasAdquiridas(String correo) {
         List<Entrada> entradasUsuario = new ArrayList<>();
 
@@ -221,7 +228,7 @@ public class IEventoMgr {
 
         return false; // Entrada no encontrada o error
     }
-
+    */
     //IRealizarEvento
     @Override
     public boolean crearEvento(String titulo, Date fechaRealizacion, String categoria, List<Entrada> entradas, String direccion, String politicas) {
@@ -301,7 +308,7 @@ public class IEventoMgr {
     }
 
     @Override
-    public boolean modificarEvento(int idEvento, Date fechaRealizacion, List<Entrada> entradas, String direccion, String politicas, double maxPrice) {
+    public boolean modificarEvento(int idEvento, String titulo, Date fechaRealizacion, String categoria, List<Entrada> entradas, String direccion, String politicas, double maxPrice) {
         try {
             // Leer eventos existentes
             String eventosContenido = Files.readString(Paths.get(EVENTOS_JSON));
@@ -318,7 +325,9 @@ public class IEventoMgr {
                 JSONObject eventoJson = eventosArray.getJSONObject(i);
                 if (eventoJson.getInt("idEvento") == idEvento) {
 
+                    eventoJson.put("titulo", titulo);
                     eventoJson.put("fechaRealizacion", fechaFormateada);
+                    eventoJson.put("categoria", categoria);
                     eventoJson.put("direccion", direccion);
                     eventoJson.put("politicas", politicas);
                     eventoJson.put("maxPrice", maxPrice);  // aquí el nuevo precio máximo
@@ -450,6 +459,7 @@ public class IEventoMgr {
     }
 
     //ITramitarDevolucion
+    /*
     @Override
     public double procesarDevolucion(int idEvento) {
     double totalDevolucion = 0.0;
@@ -551,7 +561,7 @@ public class IEventoMgr {
         }
     }
 
-
+    */
 
     // Método auxiliar para guardar una entrada en el JSON
     private void guardarEntradaEnJson(Entrada entrada) {
@@ -560,11 +570,12 @@ public class IEventoMgr {
             JSONArray entradasArray = new JSONArray(contenido);
 
             JSONObject nuevaEntrada = new JSONObject();
-            nuevaEntrada.put("id", entrada.getId());
+            nuevaEntrada.put("idEntrada", entrada.getIdEntrada());
             nuevaEntrada.put("idEvento", entrada.getIdEvento());
             nuevaEntrada.put("precio", entrada.getPrecio());
+            nuevaEntrada.put("tipoEntrada", entrada.getTipoEntrada());
             nuevaEntrada.put("estadoEntrada", entrada.getEstadoEntrada());
-            nuevaEntrada.put("correo", entrada.getCorreo());
+            nuevaEntrada.put("correo", entrada.getCorreoAsociado());
 
             entradasArray.put(nuevaEntrada);
 

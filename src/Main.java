@@ -2,6 +2,7 @@
 import java.util.Scanner;
 
 import negocio.autenticacion.AutenticacionMgr;
+import negocio.evento.IEventoMgr;
 
 public class Main {
     public static void main(String[] args) {
@@ -71,15 +72,45 @@ public class Main {
                         );
                         menuAdmin.mostrarMenu();
                     } else {
-                        System.out.println("Inicio de sesión exitoso. Accediendo al menú de perfil...");
+                        System.out.println("Inicio de sesión exitoso. Accediendo al menú de usuario...");
                         sistema.autenticacion.AuthService authService = new sistema.autenticacion.AuthService();
-                        sistema.autenticacion.AuthCLI menuPerfil = new sistema.autenticacion.AuthCLI(
-                            authService, // IPerfilUsuario
-                            authService, // IGestionarCuenta
-                            sc,
-                            email // email autenticado
-                        );
-                        menuPerfil.mostrarMenu();
+                        boolean salirUsuario = false;
+                        while (!salirUsuario) {
+                            System.out.println("\n--- Menú Usuario ---");
+                            System.out.println("1. Perfil de usuario");
+                            System.out.println("2. Gestión de eventos");
+                            System.out.println("0. Cerrar sesión");
+                            String opcionUsuario = sc.nextLine();
+                            switch (opcionUsuario) {
+                                case "1":
+                                    sistema.autenticacion.AuthCLI menuPerfil = new sistema.autenticacion.AuthCLI(
+                                        authService, // IPerfilUsuario
+                                        authService, // IGestionarCuenta
+                                        sc,
+                                        email // email autenticado
+                                    );
+                                    menuPerfil.mostrarMenu();
+                                    break;
+                                case "2":
+                                    sistema.eventos.EventService eventService = new sistema.eventos.EventService();
+                                    sistema.eventos.EventCLI menuEvento = new sistema.eventos.EventCLI(
+                                        eventService, // IRealizarEvento
+                                        eventService, // IComprarEntrada
+                                        eventService, // IGestionarVenta
+                                        eventService, // ITramitarDevolucion
+                                        sc,
+                                        email // email autenticado
+                                    );
+                                    menuEvento.mostrarMenu();
+                                    break;
+                                case "0":
+                                    salirUsuario = true;
+                                    System.out.println("Sesión cerrada.");
+                                    break;
+                                default:
+                                    System.out.println("Opción no válida.");
+                            }
+                        }
                     }
                     break;
 

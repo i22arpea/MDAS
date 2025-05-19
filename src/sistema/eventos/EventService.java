@@ -7,11 +7,17 @@ import sistema.eventos.interfaces.ITramitarDevolucion;
 
 import negocio.evento.IEventoMgr;
 
+import java.util.Date;
+import java.util.List;
+import modelo.Entrada;
+import org.json.JSONObject;
+
 public class EventService implements IRealizarEvento, IComprarEntrada, IGestionarVenta, ITramitarDevolucion {
     //instancia del mgr que se debe llamar
     private final IEventoMgr mgr = new IEventoMgr();
 
     //ComprarEntrada
+    /*
     @Override
     public boolean comprobarEntradas(List<Entrada> entradasAdquirir){
 
@@ -68,7 +74,7 @@ public class EventService implements IRealizarEvento, IComprarEntrada, IGestiona
         return mgr.eliminarVenta(idEntrada);
 
     }
-
+    */
     //IRealizarEvento
     @Override
     public boolean crearEvento(String titulo, Date fechaRealizacion, String categoria, List<Entrada> entradas, String direccion, String politicas){
@@ -78,16 +84,16 @@ public class EventService implements IRealizarEvento, IComprarEntrada, IGestiona
     }
 
     @Override
-    public boolean modificarEvento(int idEvento, Date fechaRealizacion, List<Entrada> entradas, String direccion, String politicas, double maxPrice){
+    public boolean modificarEvento(int idEventoModificar, String titulo, Date fechaRealizacion, String categoria, List<Entrada> entradas, String direccion, String politicas, double maxPrice){
 
-        return mgr.modificarEvento(idEvento, fechaRealizacion, entradas, direccion, politicas, maxPrice);
+        return mgr.modificarEvento(idEventoModificar, titulo, fechaRealizacion, categoria, entradas, direccion, politicas, maxPrice);
 
     }
 
     @Override
     public void visualizarEventos(){
 
-        return mgr.visualizarEventos();
+        mgr.visualizarEventos();
 
     }
 
@@ -97,7 +103,7 @@ public class EventService implements IRealizarEvento, IComprarEntrada, IGestiona
         return mgr.buscarEvento(nombreBuscado);
 
     }
-
+    /*
     //tramitardevolucion
     @Override
     public double procesarDevolucion(int idEvento){
@@ -119,5 +125,5 @@ public class EventService implements IRealizarEvento, IComprarEntrada, IGestiona
         return mgr.eliminarEvento(idEvento);
 
     }
-    
+    */
 }
