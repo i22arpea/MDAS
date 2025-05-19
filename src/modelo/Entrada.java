@@ -12,16 +12,18 @@ public class Entrada{
     protected String correo; //correo del usuario al que pertenece
     protected String tipoEntrada; //tipo de entrada VIP, normal
     protected String estadoEntrada; //En Venta, vendida, En Reventa
+    protected double precio;
 
 
     //constructor
-    public Entrada(int idEntrada, int idEvento, String tipoEntrada){ //por defecto toda las entradas que se crean son para vender (no se generan ya vendidas o en reventa)
+    public Entrada(int idEntrada, int idEvento, String tipoEntrada, double precio){ //por defecto toda las entradas que se crean son para vender (no se generan ya vendidas o en reventa)
 
         this.idEntrada = idEntrada;
         this.idEvento = idEvento;
         this.correo = "";
         this.tipoEntrada = tipoEntrada;
         this.estadoEntrada = "En Venta";
+        this.precio = precio;
 
     }
 
@@ -53,6 +55,12 @@ public class Entrada{
     public String getEstadoEntrada(){
 
         return this.estadoEntrada;
+
+    }
+
+    public double getPrecio(){
+
+        return this.precio;
 
     }
 
@@ -92,6 +100,14 @@ public class Entrada{
     public boolean setEstadoEntrada(String nuevoEstadoEntrada){
 
         this.estadoEntrada = nuevoEstadoEntrada;
+
+        return true;
+
+    }
+
+    public boolean setPrecio(double newPrice){
+
+        this.precio = newPrice;
 
         return true;
 

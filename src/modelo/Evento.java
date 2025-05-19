@@ -148,9 +148,17 @@ public class Evento{
 
     //METODO PARA GENERAR UNA LISTA DE ENTRADAS VACIAS Y ASIGNARLA AL EVENTO
 
-    public boolean listaEntradas(int numeroEntradas){
+    public boolean listaEntradas(int numeroEntradas, String tipoEntrada){
 
-        //CODIGO
+        for (int i = 0 ; i < numeroEntradas ; i++){
+
+            nuevaEntrada = new Entrada(i, this.idEvento, tipoEntrada); //creamos la entrada
+
+            this.entradas.add(nuevaEntrada); //la introducimos en el arraylist
+
+        }
+
+        return true;
 
     }
 
