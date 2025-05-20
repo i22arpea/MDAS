@@ -15,8 +15,8 @@ public class AuthService implements IRegistro, ISesion, IPerfilUsuario, IGestion
         return mgr.verificarDatosCuenta(correo, telefono, direccion, contraseña);
     }
 
-    public void crearCuenta(String nombre, String apellidos, String correo, int telefono, String direccion, String tipoUsuario, byte[] foto, String contraseña) {
-        mgr.crearCuenta(nombre, apellidos, correo, telefono, direccion, tipoUsuario, foto, contraseña);
+    public void crearCuenta(String nombre, String apellidos, String correo, int telefono, String direccion, String tipoUsuario, byte[] foto, String contraseña, String dni) {
+        mgr.crearCuenta(nombre, apellidos, correo, telefono, direccion, tipoUsuario, foto, contraseña, dni);
     }
 
     //Sesion

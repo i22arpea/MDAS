@@ -4,7 +4,6 @@ import sistema.eventos.interfaces.IComprarEntrada;
 import sistema.eventos.interfaces.IGestionarVenta;
 import sistema.eventos.interfaces.IRealizarEvento;
 import sistema.eventos.interfaces.ITramitarDevolucion;
-
 import negocio.evento.IEventoMgr;
 
 import java.util.Date;
@@ -91,9 +90,9 @@ public class EventService implements IRealizarEvento, IComprarEntrada, IGestiona
     }
 
     @Override
-    public void visualizarEventos(){
+    public List<modelo.Evento> obtenerEventos(){
 
-        mgr.visualizarEventos();
+        return mgr.obtenerEventos();
 
     }
 

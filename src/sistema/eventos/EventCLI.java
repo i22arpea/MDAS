@@ -1,13 +1,10 @@
 package sistema.eventos;
 
-import java.util.Scanner;
-import java.util.Date;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-
+import java.util.Scanner;
 import modelo.Entrada;
-import modelo.Evento;
-
 import sistema.eventos.interfaces.IComprarEntrada;
 import sistema.eventos.interfaces.IGestionarVenta;
 import sistema.eventos.interfaces.IRealizarEvento;
@@ -278,5 +275,173 @@ public class EventCLI {
                     System.out.println("Opción no válida.");
             }
         }
+    }
+
+    public void mostrarMenuPorTipoUsuario(String tipoUsuario) {
+        if ("Organizador".equalsIgnoreCase(tipoUsuario)) {
+            mostrarMenuOrganizador();
+        } else if ("Usuario".equalsIgnoreCase(tipoUsuario)) {
+            mostrarMenuUsuario();
+        } else {
+            System.out.println("Tipo de usuario no soportado en menú de eventos.");
+        }
+    }
+
+    public void mostrarMenuUsuario() {
+        while (true) {
+            System.out.println("\n--- Eventos Disponibles ---");
+            // Mostrar todos los eventos disponibles
+            List<modelo.Evento> eventos = realizarEvento.obtenerEventos();
+            if (eventos == null || eventos.isEmpty()) {
+                System.out.println("No hay eventos disponibles.");
+                System.out.println("0. Volver");
+                String opcion = sc.nextLine();
+                if ("0".equals(opcion)) return;
+                continue;
+            }
+            for (int i = 0; i < eventos.size(); i++) {
+                modelo.Evento evento = eventos.get(i);
+                System.out.println((i+1) + ". " + evento.getTitulo() + " - " + evento.getFechaRealizacion());
+            }
+            System.out.println("0. Volver");
+            System.out.print("Seleccione un evento: ");
+            String opcion = sc.nextLine();
+            if ("0".equals(opcion)) return;
+            int idx;
+            try {
+                idx = Integer.parseInt(opcion) - 1;
+                if (idx < 0 || idx >= eventos.size()) {
+                    System.out.println("Opción no válida.");
+                    continue;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Opción no válida.");
+                continue;
+            }
+            modelo.Evento eventoSeleccionado = eventos.get(idx);
+            mostrarMenuEventoUsuario(eventoSeleccionado);
+        }
+    }
+
+    private void mostrarMenuEventoUsuario(modelo.Evento evento) {
+        while (true) {
+            System.out.println("\n--- Información del Evento ---");
+            System.out.println("Título: " + evento.getTitulo());
+            System.out.println("Fecha: " + evento.getFechaRealizacion());
+            System.out.println("Categoría: " + evento.getCategoria());
+            System.out.println("Dirección: " + evento.getDireccion());
+            System.out.println("Políticas: " + evento.getPoliticas());
+            System.out.println("\n1. Comprar entrada");
+            System.out.println("2. Gestionar venta");
+            System.out.println("0. Volver");
+            String opcion = sc.nextLine();
+            switch (opcion) {
+                case "1":
+                    mostrarSubmenuComprarEntrada();
+                    break;
+                case "2":
+                    mostrarSubmenuGestionarVenta();
+                    break;
+                case "0":
+                    return;
+                default:
+                    System.out.println("Opción no válida.");
+            }
+        }
+    }
+
+    public void mostrarMenuOrganizador() {
+        while (true) {
+            System.out.println("\n--- Menú Organizador ---");
+            System.out.println("1. Realizar evento");
+            System.out.println("2. Tramitar devolución");
+            System.out.println("0. Volver");
+            String opcion = sc.nextLine();
+            switch (opcion) {
+                case "1":
+                    mostrarSubmenuRealizarEvento();
+                    break;
+                case "2":
+                    mostrarSubmenuTramitarDevolucion();
+                    break;
+                case "0":
+                    return;
+                default:
+                    System.out.println("Opción no válida.");
+            }
+        }
+    }
+
+    // Submenús específicos
+    private void mostrarSubmenuRealizarEvento() {
+        System.out.println("\n--- Menú RealizarEvento ---");
+        System.out.println("1. crearEvento");
+        System.out.println("2. modificarEvento");
+        System.out.println("3. visualizarEvento");
+        System.out.println("4. buscarEvento");
+        System.out.println("0. Volver");
+        String opcion2 = sc.nextLine();
+        switch(opcion2){
+            case "1":
+                System.out.println("Titulo: ");
+                String titulo = sc.nextLine();
+                System.out.println("Categoria: ");
+                String categoria = sc.nextLine();
+                System.out.println("Direccion: ");
+                String direccion = sc.nextLine();
+                System.out.println("Politicas: ");
+                String politicas = sc.nextLine();
+                Date fechaRealizacion = new Date();
+                List<Entrada> entradas = new ArrayList<>();
+                realizarEvento.crearEvento(titulo, fechaRealizacion, categoria, entradas, direccion, politicas);
+                break;
+            case "2":
+                System.out.println("Introduzca el id del evento a modificar: ");
+                int idEvento = Integer.parseInt(sc.nextLine());
+                System.out.println("Titulo: ");
+                titulo = sc.nextLine();
+                System.out.println("Categoria: ");
+                categoria = sc.nextLine();
+                System.out.println("Direccion: ");
+                direccion = sc.nextLine();
+                System.out.println("Politicas: ");
+                politicas = sc.nextLine();
+                System.out.println("Precio evento: ");
+                double maxPrice = Double.parseDouble(sc.nextLine());
+                fechaRealizacion = new Date();
+                entradas = new ArrayList<>();
+                realizarEvento.modificarEvento(idEvento, titulo, fechaRealizacion, categoria, entradas, direccion, politicas, maxPrice);
+                break;
+            case "3":
+                //realizarEvento.visualizarEventos();
+                break;
+            case "4":
+                System.out.println("Introduzca el nombre del evento a buscar: ");
+                String nombre = sc.nextLine();
+                realizarEvento.buscarEvento(nombre);
+                break;
+            case "0":
+                return;
+            default:
+                System.out.println("Opción no válida");
+        }
+    }
+
+    private void mostrarSubmenuTramitarDevolucion() {
+        System.out.println("\n--- Menú Gestionar Devolución ---");
+        System.out.println("(Funcionalidad de gestionar devolución aquí)");
+        // Aquí puedes implementar el menú real de devoluciones
+    }
+
+    private void mostrarSubmenuComprarEntrada() {
+        System.out.println("\n--- Menú Comprar Entrada ---");
+        System.out.println("(Funcionalidad de comprar entrada aquí)");
+        // Aquí puedes implementar el menú real de compra de entradas
+    }
+
+    private void mostrarSubmenuGestionarVenta() {
+        System.out.println("\n--- Menú Gestionar Venta ---");
+        System.out.println("(Funcionalidad de gestionar venta aquí)");
+        // Aquí puedes implementar el menú real de gestión de venta
     }
 }

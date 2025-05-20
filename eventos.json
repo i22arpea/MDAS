@@ -1,0 +1,29 @@
+[
+  {
+    "idEvento": 1,
+    "titulo": "Concierto Primavera",
+    "fechaRealizacion": "2025-06-10T20:00:00",
+    "categoria": "Música",
+    "direccion": "Auditorio Nacional, Madrid",
+    "politicas": "No se permite reingreso. Prohibido grabar.",
+    "maxPrice": 80.0
+  },
+  {
+    "idEvento": 2,
+    "titulo": "Feria del Libro",
+    "fechaRealizacion": "2025-07-01T10:00:00",
+    "categoria": "Cultura",
+    "direccion": "Parque del Retiro, Madrid",
+    "politicas": "Entrada libre. Menores acompañados.",
+    "maxPrice": 0.0
+  },
+  {
+    "idEvento": 3,
+    "titulo": "Obra de Teatro: Hamlet",
+    "fechaRealizacion": "2025-08-15T19:30:00",
+    "categoria": "Teatro",
+    "direccion": "Teatro Real, Madrid",
+    "politicas": "No se permite el uso de móviles.",
+    "maxPrice": 50.0
+  }
+]

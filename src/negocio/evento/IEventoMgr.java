@@ -425,6 +425,39 @@ public class IEventoMgr implements IRealizarEvento {
         }
     }
 
+    // Devuelve una lista de objetos Evento leídos del JSON
+    @Override
+    public List<modelo.Evento> obtenerEventos() {
+        List<modelo.Evento> lista = new ArrayList<>();
+        try {
+            String contenido = Files.readString(Paths.get(EVENTOS_JSON));
+            JSONArray eventosArray = new JSONArray(contenido);
+            for (int i = 0; i < eventosArray.length(); i++) {
+                JSONObject evento = eventosArray.getJSONObject(i);
+                int id = evento.getInt("idEvento");
+                String titulo = evento.getString("titulo");
+                String fechaStr = evento.getString("fechaRealizacion");
+                String categoria = evento.getString("categoria");
+                String direccion = evento.getString("direccion");
+                String politicas = evento.getString("politicas");
+                double maxPrice = evento.getDouble("maxPrice");
+                // Parsear la fecha y crear el objeto Evento con el constructor adecuado
+                Date fecha = null;
+                try {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                    fecha = sdf.parse(fechaStr);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                modelo.Evento ev = new modelo.Evento(id, titulo, fecha, categoria, direccion, politicas, maxPrice);
+                lista.add(ev);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
+
     @Override
     public JSONObject buscarEvento(String nombreBuscado) {
         try {
@@ -587,4 +620,6 @@ public class IEventoMgr implements IRealizarEvento {
             e.printStackTrace();
         }
     }
+
+    
 }

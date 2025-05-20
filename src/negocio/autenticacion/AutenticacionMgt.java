@@ -12,7 +12,7 @@ public abstract class AutenticacionMgt implements IRegistro, ISesion, IGestionar
     // Métodos de registro
     public abstract boolean verificarDatosCuenta(String correo, int telefono, String direccion, String contraseña);
     public abstract boolean verificarCuentaNoExiste(String correo);
-    public abstract void crearCuenta(String nombre, String apellidos, String correo, int telefono, String direccion, String tipoUsuario, byte[] foto, String contraseña);
+    public abstract void crearCuenta(String nombre, String apellidos, String correo, int telefono, String direccion, String tipoUsuario, byte[] foto, String contraseña, String dni);
     // Métodos de inicio de sesión
     // Cambiar la firma de iniciarSesion para que devuelva String (tipo de usuario)
     public abstract String iniciarSesion(String email, String contrasena);

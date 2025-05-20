@@ -24,5 +24,33 @@
     "nombre": "pep",
     "email": "a@gmail.com",
     "intentosFallidos": 0
+  },
+  {
+    "apellidos": "lolo",
+    "bloqueadoHasta": null,
+    "tipo": "Usuario",
+    "sesionActiva": true,
+    "foto": null,
+    "direccion": "madri",
+    "contrasena": "123456",
+    "telefono": 3,
+    "nombre": "lolo",
+    "email": "lolo@asta.com",
+    "dni": "33333333M",
+    "intentosFallidos": 0
+  },
+  {
+    "apellidos": "dsfdf",
+    "bloqueadoHasta": null,
+    "tipo": "Organizador",
+    "sesionActiva": true,
+    "foto": null,
+    "direccion": "fdfdf",
+    "contrasena": "123456",
+    "telefono": 43432,
+    "nombre": "sdfdsfdsf",
+    "email": "org@a.com",
+    "dni": "34324324324",
+    "intentosFallidos": 0
   }
 ]

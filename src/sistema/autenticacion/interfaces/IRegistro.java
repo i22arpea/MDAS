@@ -13,8 +13,9 @@ public interface IRegistro {
      * @param tipoUsuario El tipo de usuario (por ejemplo, "cliente", "administrador").
      * @param foto       La foto del usuario en formato byte[].
      * @param contrasena  La contraseña del usuario.
+     * @param dni         El DNI del usuario.
      */
-    void crearCuenta(String nombre, String apellidos, String correo, int telefono, String direccion, String tipoUsuario, byte[] foto, String contrasena);  
+    void crearCuenta(String nombre, String apellidos, String correo, int telefono, String direccion, String tipoUsuario, byte[] foto, String contrasena, String dni);  
     
     /**
      * Verifica los datos de la cuenta del usuario.

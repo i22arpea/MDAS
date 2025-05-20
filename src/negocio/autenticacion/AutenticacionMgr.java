@@ -51,7 +51,7 @@ public class AutenticacionMgr extends AutenticacionMgt {
     }
 
     @Override
-    public void crearCuenta(String nombre, String apellidos, String correo, int telefono, String direccion, String tipoUsuario, byte[] foto, String contrasena) {
+    public void crearCuenta(String nombre, String apellidos, String correo, int telefono, String direccion, String tipoUsuario, byte[] foto, String contrasena, String dni) {
         if (!verificarDatosCuenta(correo, telefono, direccion, contrasena)) {
             System.out.println("Datos de cuenta inválidos o el correo ya está registrado. No se puede crear la cuenta.");
             return;
@@ -65,6 +65,7 @@ public class AutenticacionMgr extends AutenticacionMgt {
         obj.put("tipo", tipoUsuario);
         obj.put("foto", foto != null ? java.util.Base64.getEncoder().encodeToString(foto) : JSONObject.NULL);
         obj.put("contrasena", contrasena);
+        obj.put("dni", dni);
         obj.put("intentosFallidos", 0);
         obj.put("bloqueadoHasta", JSONObject.NULL);
         obj.put("sesionActiva", false);
