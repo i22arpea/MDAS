@@ -16,7 +16,7 @@ public class EventService implements IRealizarEvento, IComprarEntrada, IGestiona
     private final IEventoMgr mgr = new IEventoMgr();
 
     //ComprarEntrada
-    /*
+    
     @Override
     public boolean comprobarEntradas(List<Entrada> entradasAdquirir){
 
@@ -25,19 +25,19 @@ public class EventService implements IRealizarEvento, IComprarEntrada, IGestiona
     }
 
     @Override
-    public boolean pagoDeEntradas(int idUsuario, String formaPago, double precio){
+    public boolean pagoDeEntradas(String correoUser, String formaPago, double precio){
 
-        return mgr.pagoDeEntradas(idUsuario, formaPago, precio);
+        return mgr.pagoDeEntradas(correoUser, formaPago, precio);
 
     }
 
     @Override
-    public Entrada generarEntradaUsuario(Entrada entradaAdquirida, int idUsuario){
+    public Entrada generarEntradaUsuario(Entrada entradaAdquirida, String correoUsuario){
 
-        return mgr.generarEntradaUsuario(entradaAdquirida, idUsuario);
+        return mgr.generarEntradaUsuario(entradaAdquirida, correoUsuario);
 
     }
-
+/*
     //IGestionarCuenta
     @Override
     public String mostrarEntradasAdquiridas(String correo){

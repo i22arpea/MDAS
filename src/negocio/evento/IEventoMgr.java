@@ -38,27 +38,27 @@ public class IEventoMgr implements IRealizarEvento {
     }
 
     //IComprarEntrada
-    /*
+    
     public boolean comprobarEntradas(List<Entrada> entradasAdquirir) {
         for (Entrada entrada : entradasAdquirir) {
-            if ("Vendida".equalsIgnoreCase(entrada.getEstadoEntrada()) || !entrada.getCorreo().isEmpty()) {
+            if ("Vendida".equalsIgnoreCase(entrada.getEstadoEntrada()) || !entrada.getCorreoAsociado().isEmpty()) {
                 return false;
             }
         }
         return true;
     }
 
-    public boolean pagoDeEntradas(int idUsuario, String formaPago, double precio) {
-        System.out.println("El usuario con id " + idUsuario + " está realizando el pago por " + precio + " con el método " + formaPago);
+    public boolean pagoDeEntradas(String correoUser, String formaPago, double precio) {
+        System.out.println("El usuario con correo " + correoUser + " está realizando el pago por " + precio + " con el método " + formaPago);
         return true;
     }
 
     public Entrada generarEntradaUsuario(Entrada entradaAdquirida, String correoUsuario) {
-        entradaAdquirida.setCorreo(correoUsuario);
+        entradaAdquirida.setCorreoAsociado(correoUsuario);
         guardarEntradaEnJson(entradaAdquirida);
         return entradaAdquirida;
     }
-*/
+
     //IGestionarVenta
     /*
     public String mostrarEntradasAdquiridas(String correo) {
@@ -384,45 +384,6 @@ public class IEventoMgr implements IRealizarEvento {
         }
 
     return false;
-    }
-
-    @Override
-    public void visualizarEventos() {
-        try {
-            String contenido = Files.readString(Paths.get(EVENTOS_JSON));
-            JSONArray eventosArray = new JSONArray(contenido);
-
-            if (eventosArray.length() == 0) {
-                System.out.println("No hay eventos registrados.");
-                return;
-            }
-
-            System.out.println("==== EVENTOS REGISTRADOS ====");
-
-            for (int i = 0; i < eventosArray.length(); i++) {
-                JSONObject evento = eventosArray.getJSONObject(i);
-
-                int id = evento.getInt("idEvento");
-                String titulo = evento.getString("titulo");
-                String fecha = evento.getString("fechaRealizacion");
-                String categoria = evento.getString("categoria");
-                String direccion = evento.getString("direccion");
-                String politicas = evento.getString("politicas");
-                double maxPrice = evento.getDouble("maxPrice");
-
-                System.out.println("ID Evento: " + id);
-                System.out.println("Título: " + titulo);
-                System.out.println("Fecha de realización: " + fecha);
-                System.out.println("Categoría: " + categoria);
-                System.out.println("Dirección: " + direccion);
-                System.out.println("Políticas: " + politicas);
-                System.out.println("Precio máximo: " + maxPrice);
-                System.out.println("------------------------------");
-            }
-
-        } catch (IOException e) {
-            System.err.println("Error al leer el archivo de eventos: " + e.getMessage());
-        }
     }
 
     // Devuelve una lista de objetos Evento leídos del JSON

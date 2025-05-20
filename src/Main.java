@@ -192,7 +192,7 @@ public class Main {
                             while (!salirUsuario) {
                                 System.out.println("\n--- Menú Usuario ---");
                                 System.out.println("1. Perfil de usuario");
-                                System.out.println("2. Gestión de eventos");
+                                System.out.println("2. Gestión de eventos"); //MUESTRA AL USUARIO LOS EVENTOS QUE HAY Y PERMITE GESTIONAR COMPRA Y VENTA DE LOS MISMOS
                                 System.out.println("0. Cerrar sesión");
                                 String opcionUsuario = sc.nextLine();
                                 switch (opcionUsuario) {

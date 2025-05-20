@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 import modelo.Entrada;
+import modelo.Evento;
+import modelo.Usuario;
 import sistema.eventos.interfaces.IComprarEntrada;
 import sistema.eventos.interfaces.IGestionarVenta;
 import sistema.eventos.interfaces.IRealizarEvento;
@@ -99,7 +101,7 @@ public class EventCLI {
 
                         case "3":
 
-                            realizarEvento.visualizarEventos();
+                            //realizarEvento.visualizarEventos();
 
                             break;
 
@@ -337,10 +339,10 @@ public class EventCLI {
             String opcion = sc.nextLine();
             switch (opcion) {
                 case "1":
-                    mostrarSubmenuComprarEntrada();
+                    mostrarSubmenuComprarEntrada(evento); //PARA PODER ACCEDER AL ID DEL EVENTO DESDE EL SUBMENU
                     break;
                 case "2":
-                    mostrarSubmenuGestionarVenta();
+                    mostrarSubmenuGestionarVenta(evento); //PARA PODER ACCEDER AL ID DEL EVENTO DESDE EL SUBMENU
                     break;
                 case "0":
                     return;
@@ -433,13 +435,103 @@ public class EventCLI {
         // Aquí puedes implementar el menú real de devoluciones
     }
 
-    private void mostrarSubmenuComprarEntrada() {
-        System.out.println("\n--- Menú Comprar Entrada ---");
-        System.out.println("(Funcionalidad de comprar entrada aquí)");
+    private void mostrarSubmenuComprarEntrada(Evento eventoSeleccionado) {
+        System.out.println("\n--- Menú Comprar Entrada ---\n");
         // Aquí puedes implementar el menú real de compra de entradas
+        System.out.println("Cantidad de entradas a comprar:");
+        int cantidadEntradas = Integer.parseInt(sc.nextLine()); //se pide el numero de entradas a comprar
+        //se comprueba si hay entradas disponibles
+        
+        int disponibles = 0;
+        for(Entrada entrada : eventoSeleccionado.getListEntradas()){
+            if(!entrada.getEstadoEntrada().equals("Vendida")){
+                disponibles++;
+            }
+        }
+
+        if(disponibles >= cantidadEntradas){
+
+            //se calcula y muestra el precio total
+            double precioTotal = eventoSeleccionado.getMaxPrice() * cantidadEntradas;
+            System.out.println("\nPrecio total: " + precioTotal + "€\n");
+            //se pregunta metodo de pago
+            System.out.println("Método de pago: ");
+            String metodoPago = sc.nextLine();
+
+            System.out.println("Datos recodigos: " + cantidadEntradas + " entradas compradas para el evento " + eventoSeleccionado.getTitulo() + " por un total de " + precioTotal + "€ con el método de pago " + metodoPago);
+
+            ArrayList<Entrada> entradasParaUsuario = new ArrayList<>();
+            for(Entrada entrada : eventoSeleccionado.getListEntradas()){
+                if(!entrada.getEstadoEntrada().equals("Vendida")){
+                    entradasParaUsuario.add(entrada);
+                }
+            }
+
+            //comprobamos que las entradas seleccionadas son válidas
+            boolean isValid = comprarEntrada.comprobarEntradas(entradasParaUsuario);
+
+            if(isValid){
+
+                boolean isPagoValid = comprarEntrada.pagoDeEntradas(email, metodoPago, precioTotal);
+
+                if(isPagoValid){
+
+                    for(Entrada entrada : entradasParaUsuario){
+                        
+                        Entrada entradaGenerada = comprarEntrada.generarEntradaUsuario(entrada, email);
+                        //se asigna la entrada generada al usuario
+                        List<Entrada> listaEntradas = eventoSeleccionado.getListEntradas();
+                        for(Entrada entrada1 : listaEntradas){
+                            if(entradaGenerada.getIdEntrada() == entrada1.getIdEntrada()){
+                                entrada1.setEstadoEntrada("Vendida");
+                                entrada1.setCorreoAsociado(email);
+                            }
+                        }
+                        eventoSeleccionado.setListaEntradas(listaEntradas);
+
+                        //GUARDAR CAMBIOS EN EL JSON DE ENTRADAS
+                        try {
+                            eventoSeleccionado.guardarEventoActualizado();
+                        } catch (Exception e) {
+                            System.out.println("Error al guardar el evento: " + e.getMessage());
+                            e.printStackTrace();
+                        }
+
+                    }
+
+                }else{
+
+                    System.out.println("Error al realizar el pago.");
+
+                }
+
+                    
+
+            }else{
+
+                System.out.println("Ha ocurrido un error al seleccionar entradas disponibles\n");
+
+            }
+
+        }else{
+
+            System.out.println("No hay suficientes entradas disponibles para el evento " + eventoSeleccionado.getTitulo());
+            System.out.println("Entradas disponibles: " + disponibles);
+
+            //volver al menu anterior
+
+        }
+        
+
+        
+
+        //FUNCIONALIDADES DE LA INTERFAZCOMPRAR ENTRADA
+
+
+
     }
 
-    private void mostrarSubmenuGestionarVenta() {
+    private void mostrarSubmenuGestionarVenta(Evento eventoSeleccionado) {
         System.out.println("\n--- Menú Gestionar Venta ---");
         System.out.println("(Funcionalidad de gestionar venta aquí)");
         // Aquí puedes implementar el menú real de gestión de venta
