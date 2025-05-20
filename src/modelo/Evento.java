@@ -177,7 +177,10 @@ public class Evento{
             if (eventoJson.getInt("idEvento") == this.getIdEvento()) {
                 // Actualiza los campos del evento
                 eventoJson.put("titulo", this.getTitulo());
-                eventoJson.put("fechaRealizacion", this.getFechaRealizacion().toString());
+                // Formatea la fecha a yyyy-MM-dd HH:mm:ss
+                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String fechaFormateada = sdf.format(this.getFechaRealizacion());
+                eventoJson.put("fechaRealizacion", fechaFormateada);
                 eventoJson.put("categoria", this.getCategoria());
                 eventoJson.put("direccion", this.getDireccion());
                 eventoJson.put("politicas", this.getPoliticas());
@@ -203,6 +206,37 @@ public class Evento{
         try (FileWriter writer = new FileWriter(path)) {
             writer.write(eventosArray.toString(4)); // pretty print
         }
+    }
+    /**
+     * Lee las entradas asociadas a este evento desde eventos.json y las devuelve como lista.
+     */
+    public List<Entrada> cargarEntradasDesdeJson() throws Exception {
+        List<Entrada> lista = new ArrayList<>();
+        String path = "eventos.json";
+        String contenido = new String(Files.readAllBytes(Paths.get(path)));
+        JSONArray eventosArray = new JSONArray(contenido);
+        for (int i = 0; i < eventosArray.length(); i++) {
+            JSONObject eventoJson = eventosArray.getJSONObject(i);
+            if (eventoJson.getInt("idEvento") == this.getIdEvento()) {
+                JSONArray entradasArray = eventoJson.optJSONArray("entradas");
+                if (entradasArray != null) {
+                    for (int j = 0; j < entradasArray.length(); j++) {
+                        JSONObject entradaJson = entradasArray.getJSONObject(j);
+                        int idEntrada = entradaJson.getInt("idEntrada");
+                        String estado = entradaJson.optString("estadoEntrada", "");
+                        String correo = entradaJson.optString("correoAsociado", "");
+                        String tipo = entradaJson.has("tipoEntrada") ? entradaJson.getString("tipoEntrada") : "";
+                        double precio = entradaJson.has("precio") ? entradaJson.getDouble("precio") : 0.0;
+                        Entrada entrada = new Entrada(idEntrada, this.idEvento, tipo, precio);
+                        entrada.setEstadoEntrada(estado);
+                        entrada.setCorreoAsociado(correo);
+                        lista.add(entrada);
+                    }
+                }
+                break;
+            }
+        }
+        return lista;
     }
 
 }

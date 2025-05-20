@@ -37,7 +37,7 @@ public class EventService implements IRealizarEvento, IComprarEntrada, IGestiona
         return mgr.generarEntradaUsuario(entradaAdquirida, correoUsuario);
 
     }
-/*
+
     //IGestionarCuenta
     @Override
     public String mostrarEntradasAdquiridas(String correo){
@@ -73,7 +73,7 @@ public class EventService implements IRealizarEvento, IComprarEntrada, IGestiona
         return mgr.eliminarVenta(idEntrada);
 
     }
-    */
+    
     //IRealizarEvento
     @Override
     public boolean crearEvento(String titulo, Date fechaRealizacion, String categoria, List<Entrada> entradas, String direccion, String politicas){
@@ -102,7 +102,7 @@ public class EventService implements IRealizarEvento, IComprarEntrada, IGestiona
         return mgr.buscarEvento(nombreBuscado);
 
     }
-    /*
+    
     //tramitardevolucion
     @Override
     public double procesarDevolucion(int idEvento){
@@ -112,9 +112,9 @@ public class EventService implements IRealizarEvento, IComprarEntrada, IGestiona
     }
 
     @Override
-    public boolean enviarListadoDevolución(int idEvento, double devolucion){
+    public boolean enviarListadoDevolucion(int idEvento, double devolucion){
 
-        return mgr.enviarListadoDevolución(idEvento, devolucion);
+        return mgr.enviarListadoDevolucion(idEvento, devolucion);
 
     }
 
@@ -124,5 +124,5 @@ public class EventService implements IRealizarEvento, IComprarEntrada, IGestiona
         return mgr.eliminarEvento(idEvento);
 
     }
-    */
+    
 }

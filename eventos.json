@@ -1,29 +1,64 @@
 [
-  {
-    "idEvento": 1,
-    "titulo": "Concierto Primavera",
-    "fechaRealizacion": "2025-06-10T20:00:00",
-    "categoria": "Música",
-    "direccion": "Auditorio Nacional, Madrid",
-    "politicas": "No se permite reingreso. Prohibido grabar.",
-    "maxPrice": 80.0
-  },
-  {
-    "idEvento": 2,
-    "titulo": "Feria del Libro",
-    "fechaRealizacion": "2025-07-01T10:00:00",
-    "categoria": "Cultura",
-    "direccion": "Parque del Retiro, Madrid",
-    "politicas": "Entrada libre. Menores acompañados.",
-    "maxPrice": 0.0
-  },
-  {
-    "idEvento": 3,
-    "titulo": "Obra de Teatro: Hamlet",
-    "fechaRealizacion": "2025-08-15T19:30:00",
-    "categoria": "Teatro",
-    "direccion": "Teatro Real, Madrid",
-    "politicas": "No se permite el uso de móviles.",
-    "maxPrice": 50.0
-  }
+    {
+        "politicas": "No se permite reingreso. Prohibido grabar.",
+        "fechaRealizacion": "2025-06-10T20:00:00",
+        "entradas": [
+            1,
+            2
+        ],
+        "idEvento": 1,
+        "categoria": "Música",
+        "direccion": "Auditorio Nacional, Madrid",
+        "titulo": "Concierto Primavera",
+        "maxPrice": 80
+    },
+    {
+        "politicas": "Entrada libre. Menores acompañados.",
+        "fechaRealizacion": "2025-07-01T10:00:00",
+        "entradas": [3],
+        "idEvento": 2,
+        "categoria": "Cultura",
+        "direccion": "Parque del Retiro, Madrid",
+        "titulo": "Feria del Libro",
+        "maxPrice": 0
+    },
+    {
+        "politicas": "No se permite el uso de móviles.",
+        "fechaRealizacion": "2025-08-15T19:30:00",
+        "entradas": [
+            4,
+            5
+        ],
+        "idEvento": 3,
+        "categoria": "Teatro",
+        "direccion": "Teatro Real, Madrid",
+        "titulo": "Obra de Teatro: Hamlet",
+        "maxPrice": 50
+    },
+    {
+        "politicas": "hjhjhg",
+        "fechaRealizacion": "2025-05-21 00:19:08",
+        "entradas": [
+            {
+                "correoAsociado": "lolo@asta.com",
+                "estadoEntrada": "Vendida",
+                "idEntrada": 1
+            },
+            {
+                "correoAsociado": "lolo@asta.com",
+                "estadoEntrada": "Vendida",
+                "idEntrada": 2
+            },
+            {
+                "correoAsociado": "",
+                "estadoEntrada": "En Venta",
+                "idEntrada": 3
+            }
+        ],
+        "idEvento": 5,
+        "categoria": "fsfd",
+        "direccion": "fefgr",
+        "titulo": "ololo",
+        "maxPrice": 100
+    }
 ]

@@ -1,1 +1,66 @@
-[]
+[
+    {
+        "precio": 20,
+        "idEvento": 1,
+        "correo": "",
+        "tipoEntrada": "General",
+        "estadoEntrada": "En Reventa",
+        "idEntrada": 1
+    },
+    {
+        "precio": 80,
+        "idEvento": 1,
+        "correo": "",
+        "tipoEntrada": "VIP",
+        "estadoEntrada": "Disponible",
+        "idEntrada": 2
+    },
+    {
+        "precio": 0,
+        "idEvento": 2,
+        "correo": "",
+        "tipoEntrada": "General",
+        "estadoEntrada": "Disponible",
+        "idEntrada": 3
+    },
+    {
+        "precio": 30,
+        "idEvento": 3,
+        "correo": "",
+        "tipoEntrada": "General",
+        "estadoEntrada": "Disponible",
+        "idEntrada": 4
+    },
+    {
+        "precio": 50,
+        "idEvento": 3,
+        "correo": "",
+        "tipoEntrada": "VIP",
+        "estadoEntrada": "Disponible",
+        "idEntrada": 5
+    },
+    {
+        "precio": 50,
+        "idEvento": 5,
+        "correo": "lolo@asta.com",
+        "tipoEntrada": "general",
+        "estadoEntrada": "Vendida",
+        "idEntrada": 1
+    },
+    {
+        "precio": 100,
+        "idEvento": 5,
+        "correo": "lolo@asta.com",
+        "tipoEntrada": "vip",
+        "estadoEntrada": "Vendida",
+        "idEntrada": 2
+    },
+    {
+        "precio": 70,
+        "idEvento": 5,
+        "correo": "",
+        "tipoEntrada": "general",
+        "estadoEntrada": "En Venta",
+        "idEntrada": 3
+    }
+]
