@@ -81,7 +81,7 @@ public class AutenticacionMgr extends AutenticacionMgt {
     }
     }
 
-    @Override
+     @Override
     public void crearCuenta(String nombre, String apellidos, String correo, int telefono, String direccion, String tipoUsuario, byte[] foto, String contrasena) {
         if (!verificarDatosCuenta(correo, telefono, direccion, contrasena)) {
             System.out.println("Datos de cuenta inválidos o el correo ya está registrado. No se puede crear la cuenta.");
@@ -99,7 +99,9 @@ public class AutenticacionMgr extends AutenticacionMgt {
         obj.put("intentosFallidos", 0);
         obj.put("bloqueadoHasta", JSONObject.NULL);
         obj.put("sesionActiva", false);
-        guardarUsuario(obj);
+
+        Usuario nuevoUsuario = UsuarioFactory.crearUsuarioDesdeJSON(obj);
+        guardarUsuario(nuevoUsuario);
         System.out.println("Usuario registrado con éxito.");
     }
 
@@ -122,7 +124,7 @@ public class AutenticacionMgr extends AutenticacionMgt {
     /**
      * Devuelve el tipo de usuario si las credenciales son correctas, o null si no lo son.
      */
-    @Override
+ @Override
     public String comprobarCredenciales(String email, String contrasena) {
         try {
             String contenido = new String(Files.readAllBytes(Paths.get(RUTA_JSON)));
@@ -166,6 +168,7 @@ public class AutenticacionMgr extends AutenticacionMgt {
         }
         return null;
     }
+
 
     // Cambiar la firma de iniciarSesion para que devuelva String (tipo de usuario)
     @Override

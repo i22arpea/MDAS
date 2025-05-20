@@ -38,5 +38,5 @@ public abstract class Usuario {
         return sesionActiva;
     }
 
-        public abstract JSONObject toJSONObject();
+    public abstract JSONObject toJSONObject();
 }
