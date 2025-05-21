@@ -14,6 +14,6 @@ public class TestFactory {
         Usuario usuario = UsuarioFactory.crearUsuarioDesdeJSON(jsonCliente);
 
         System.out.println("Instancia creada: " + usuario.getClass().getSimpleName());
-        System.out.println(usuario.toJSONObject().toString(2));
+    
     }
 }
