@@ -110,7 +110,7 @@ public class IEventoMgr extends IEventoMgt {
                     for (int j = 0; j < entradasEvento.length(); j++) {
                         JSONObject entradaJson = entradasEvento.getJSONObject(j);
                         if (entradaJson.getInt("idEntrada") == entrada.getIdEntrada()) {
-                            entradaJson.put("correo", entrada.getCorreoAsociado());
+                            entradaJson.put("correoAsociado", entrada.getCorreoAsociado());
                             entradaJson.put("estadoEntrada", entrada.getEstadoEntrada());
                             updated = true;
                             break;
@@ -123,7 +123,7 @@ public class IEventoMgr extends IEventoMgt {
                         nuevaEntrada.put("precio", entrada.getPrecio());
                         nuevaEntrada.put("tipoEntrada", entrada.getTipoEntrada());
                         nuevaEntrada.put("estadoEntrada", entrada.getEstadoEntrada());
-                        nuevaEntrada.put("correo", entrada.getCorreoAsociado());
+                        nuevaEntrada.put("correoAsociado", entrada.getCorreoAsociado());
                         entradasEvento.put(nuevaEntrada);
                     }
                     break;

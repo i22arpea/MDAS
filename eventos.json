@@ -37,16 +37,16 @@
     },
     {
         "politicas": "hjhjhg",
-        "fechaRealizacion": "2025-05-21 00:19:08",
+        "fechaRealizacion": "2025-05-21T00:19:08",
         "entradas": [
             {
-                "correoAsociado": "lolo@asta.com",
-                "estadoEntrada": "Vendida",
+                "correoAsociado": "",
+                "estadoEntrada": "En Venta",
                 "idEntrada": 1
             },
             {
-                "correoAsociado": "lolo@asta.com",
-                "estadoEntrada": "Vendida",
+                "correoAsociado": "",
+                "estadoEntrada": "En Venta",
                 "idEntrada": 2
             },
             {
