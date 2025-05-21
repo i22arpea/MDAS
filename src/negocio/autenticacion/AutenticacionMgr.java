@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
+import modelo.Usuario;
+import modelo.UsuarioFactory;
 
 public class AutenticacionMgr extends AutenticacionMgt {
     private static final String RUTA_JSON = "usuarios.json";
@@ -380,6 +382,23 @@ public class AutenticacionMgr extends AutenticacionMgt {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    // Devuelve un objeto Usuario (subclase) usando UsuarioFactory a partir del email
+    public Usuario obtenerUsuarioPorEmail(String email) {
+        try {
+            String contenido = new String(Files.readAllBytes(Paths.get(RUTA_JSON)));
+            JSONArray array = new JSONArray(contenido);
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject obj = array.getJSONObject(i);
+                if (obj.getString("email").equalsIgnoreCase(email)) {
+                    return UsuarioFactory.crearUsuarioDesdeJSON(obj);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
    

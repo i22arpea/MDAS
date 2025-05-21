@@ -1,10 +1,13 @@
 // File: Main.java
 import java.util.Scanner;
+import modelo.Usuario;
 import negocio.autenticacion.AutenticacionMgr;
+import sistema.autenticacion.AuthService;
 
 public class Main {
     public static void main(String[] args) {
-        AutenticacionMgr auth = new AutenticacionMgr();
+        AutenticacionMgr authMgr = new AutenticacionMgr();
+        AuthService authService = new AuthService();
         Scanner sc = new Scanner(System.in);
 
         while (true) {
@@ -80,7 +83,12 @@ public class Main {
                             if (!direccion.trim().isEmpty()) break;
                             System.out.println("Error: La dirección no puede estar vacía.");
                         }
-                        auth.crearCuenta(nombre, apellidos, email, telefono, direccion, "Usuario", null, pass, dni);
+                        authService.crearCuenta(nombre, apellidos, email, telefono, direccion, "Usuario", null, pass, dni);
+                        // Instanciar el usuario recién registrado usando el factory
+                        Usuario nuevoUsuario = authService.obtenerUsuarioPorEmail(email);
+                        if (nuevoUsuario != null) {
+                            System.out.println("Usuario creado: " + nuevoUsuario.getClass().getSimpleName());
+                        }
                         break;
                     }
                     break;
@@ -148,7 +156,12 @@ public class Main {
                             if (!direccion.trim().isEmpty()) break;
                             System.out.println("Error: La dirección no puede estar vacía.");
                         }
-                        auth.crearCuenta(nombre, apellidos, email, telefono, direccion, "Organizador", null, pass, dni);
+                        authService.crearCuenta(nombre, apellidos, email, telefono, direccion, "Organizador", null, pass, dni);
+                        // Instanciar el usuario recién registrado usando el factory
+                        Usuario nuevoUsuario = authService.obtenerUsuarioPorEmail(email);
+                        if (nuevoUsuario != null) {
+                            System.out.println("Usuario creado: " + nuevoUsuario.getClass().getSimpleName());
+                        }
                         break;
                     }
                     break;
@@ -171,78 +184,85 @@ public class Main {
                             if (pass.length() >= 6) break;
                             System.out.println("Error: La contraseña debe tener al menos 6 caracteres.");
                         }
-                        String tipoUsuario = auth.iniciarSesion(email, pass);
+                        String tipoUsuario = authService.iniciarSesion(email, pass);
                         if (tipoUsuario == null) {
                             System.out.println("Error: credenciales incorrectas o usuario bloqueado. ¿Deseas intentarlo de nuevo? (s/n)");
                             String retry = sc.nextLine();
                             if (!retry.equalsIgnoreCase("s")) break;
-                        } else if (tipoUsuario.equalsIgnoreCase("Administrador")) {
-                            System.out.println("Inicio de sesión de administrador exitoso. Accediendo al menú de administración...");
-                            sistema.autenticacion.AuthService authService = new sistema.autenticacion.AuthService();
-                            sistema.autenticacion.AdminCLI menuAdmin = new sistema.autenticacion.AdminCLI(
-                                authService, // IGestionarCuenta
-                                sc
-                            );
-                            menuAdmin.mostrarMenu();
-                            break;
                         } else {
-                            System.out.println("Inicio de sesión exitoso. Accediendo al menú de usuario...");
-                            sistema.autenticacion.AuthService authService = new sistema.autenticacion.AuthService();
-                            boolean salirUsuario = false;
-                            while (!salirUsuario) {
-                                System.out.println("\n--- Menú Usuario ---");
-                                System.out.println("1. Perfil de usuario");
-                                System.out.println("2. Gestión de eventos"); //MUESTRA AL USUARIO LOS EVENTOS QUE HAY Y PERMITE GESTIONAR COMPRA Y VENTA DE LOS MISMOS
-                                System.out.println("0. Cerrar sesión");
-                                String opcionUsuario = sc.nextLine();
-                                switch (opcionUsuario) {
-                                    case "1":
-                                        sistema.autenticacion.AuthCLI menuPerfil = new sistema.autenticacion.AuthCLI(
-                                            authService, // IPerfilUsuario
-                                            authService, // IGestionarCuenta
-                                            sc,
-                                            email // email autenticado
-                                        );
-                                        menuPerfil.mostrarMenu();
-                                        break;
-                                    case "2":
-                                        if (tipoUsuario.equalsIgnoreCase("Organizador")) {
-                                            // Menú para organizador
-                                            sistema.eventos.EventService eventService = new sistema.eventos.EventService();
-                                            sistema.eventos.EventCLI menuEvento = new sistema.eventos.EventCLI(
-                                                eventService, // IRealizarEvento
-                                                eventService, // IComprarEntrada
-                                                eventService, // IGestionarVenta
-                                                eventService, // ITramitarDevolucion
-                                                sc,
-                                                email // email autenticado
-                                            );
-                                            menuEvento.mostrarMenuOrganizador();
-                                        } else if (tipoUsuario.equalsIgnoreCase("Usuario")) {
-                                            // Menú para usuario (gestión de entradas)
-                                            sistema.eventos.EventService eventService = new sistema.eventos.EventService();
-                                            sistema.eventos.EventCLI menuEvento = new sistema.eventos.EventCLI(
-                                                eventService, // IRealizarEvento
-                                                eventService, // IComprarEntrada
-                                                eventService, // IGestionarVenta
-                                                eventService, // ITramitarDevolucion
-                                                sc,
-                                                email // email autenticado
-                                            );
-                                            menuEvento.mostrarMenuUsuario();
-                                        } else {
-                                            System.out.println("No tienes permisos para gestionar eventos.");
-                                        }
-                                        break;
-                                    case "0":
-                                        salirUsuario = true;
-                                        System.out.println("Sesión cerrada.");
-                                        break;
-                                    default:
-                                        System.out.println("Opción no válida.");
-                                }
+                            // Instanciar el usuario autenticado usando el factory
+                            Usuario usuarioLogueado = authService.obtenerUsuarioPorEmail(email);
+                            if (usuarioLogueado != null) {
+                                System.out.println("Bienvenido, tipo de usuario: " + usuarioLogueado.getClass().getSimpleName());
                             }
-                            break;
+                            if (tipoUsuario.equalsIgnoreCase("Administrador")) {
+                                System.out.println("Inicio de sesión de administrador exitoso. Accediendo al menú de administración...");
+                                sistema.autenticacion.AuthService authServiceAdmin = new sistema.autenticacion.AuthService();
+                                sistema.autenticacion.AdminCLI menuAdmin = new sistema.autenticacion.AdminCLI(
+                                    authServiceAdmin, // IGestionarCuenta
+                                    sc
+                                );
+                                menuAdmin.mostrarMenu();
+                                break;
+                            } else {
+                                System.out.println("Inicio de sesión exitoso. Accediendo al menú de usuario...");
+                                sistema.autenticacion.AuthService authServiceUsuario = new sistema.autenticacion.AuthService();
+                                boolean salirUsuario = false;
+                                while (!salirUsuario) {
+                                    System.out.println("\n--- Menú Usuario ---");
+                                    System.out.println("1. Perfil de usuario");
+                                    System.out.println("2. Gestión de eventos"); //MUESTRA AL USUARIO LOS EVENTOS QUE HAY Y PERMITE GESTIONAR COMPRA Y VENTA DE LOS MISMOS
+                                    System.out.println("0. Cerrar sesión");
+                                    String opcionUsuario = sc.nextLine();
+                                    switch (opcionUsuario) {
+                                        case "1":
+                                            sistema.autenticacion.AuthCLI menuPerfil = new sistema.autenticacion.AuthCLI(
+                                                authServiceUsuario, // IPerfilUsuario
+                                                authServiceUsuario, // IGestionarCuenta
+                                                sc,
+                                                email // email autenticado
+                                            );
+                                            menuPerfil.mostrarMenu();
+                                            break;
+                                        case "2":
+                                            if (tipoUsuario.equalsIgnoreCase("Organizador")) {
+                                                // Menú para organizador
+                                                sistema.eventos.EventService eventService = new sistema.eventos.EventService();
+                                                sistema.eventos.EventCLI menuEvento = new sistema.eventos.EventCLI(
+                                                    eventService, // IRealizarEvento
+                                                    eventService, // IComprarEntrada
+                                                    eventService, // IGestionarVenta
+                                                    eventService, // ITramitarDevolucion
+                                                    sc,
+                                                    email // email autenticado
+                                                );
+                                                menuEvento.mostrarMenuOrganizador();
+                                            } else if (tipoUsuario.equalsIgnoreCase("Usuario")) {
+                                                // Menú para usuario (gestión de entradas)
+                                                sistema.eventos.EventService eventService = new sistema.eventos.EventService();
+                                                sistema.eventos.EventCLI menuEvento = new sistema.eventos.EventCLI(
+                                                    eventService, // IRealizarEvento
+                                                    eventService, // IComprarEntrada
+                                                    eventService, // IGestionarVenta
+                                                    eventService, // ITramitarDevolucion
+                                                    sc,
+                                                    email // email autenticado
+                                                );
+                                                menuEvento.mostrarMenuUsuario();
+                                            } else {
+                                                System.out.println("No tienes permisos para gestionar eventos.");
+                                            }
+                                            break;
+                                        case "0":
+                                            salirUsuario = true;
+                                            System.out.println("Sesión cerrada.");
+                                            break;
+                                        default:
+                                            System.out.println("Opción no válida.");
+                                    }
+                                }
+                                break;
+                            }
                         }
                     }
                     break;

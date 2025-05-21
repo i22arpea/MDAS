@@ -58,9 +58,9 @@
             {
                 "precio": 90,
                 "idEvento": 3,
-                "correoAsociado": "",
+                "correoAsociado": "cli@a.com",
                 "tipoEntrada": "Palco",
-                "estadoEntrada": "En Venta",
+                "estadoEntrada": "Vendida",
                 "idEntrada": 5
             }
         ],

@@ -11,6 +11,7 @@ public class UsuarioFactory {
 
         switch (tipo) {
             case "cliente":
+            case "usuario": // Permitir también "usuario" como sinónimo de cliente
                 String dni = json.optString("dni", "");
                 String nombre = json.optString("nombre", "");
                 return new UsuarioCliente(email, contrasena, dni, nombre);

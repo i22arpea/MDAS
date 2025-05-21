@@ -52,5 +52,19 @@
     "email": "org@a.com",
     "dni": "34324324324",
     "intentosFallidos": 0
+  },
+  {
+    "apellidos": "fbfdgfeg",
+    "bloqueadoHasta": null,
+    "tipo": "Usuario",
+    "sesionActiva": true,
+    "foto": null,
+    "direccion": "sdfdsg",
+    "contrasena": "123456",
+    "telefono": 343432,
+    "nombre": "pepe",
+    "email": "cli@a.com",
+    "dni": "21312332434",
+    "intentosFallidos": 0
   }
 ]

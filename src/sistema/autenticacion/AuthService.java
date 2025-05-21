@@ -1,10 +1,10 @@
 package sistema.autenticacion;
 
+import negocio.autenticacion.AutenticacionMgr;
 import sistema.autenticacion.interfaces.IGestionarCuenta;
 import sistema.autenticacion.interfaces.IPerfilUsuario;
 import sistema.autenticacion.interfaces.IRegistro;
 import sistema.autenticacion.interfaces.ISesion;
-import negocio.autenticacion.AutenticacionMgr;
 
 public class AuthService implements IRegistro, ISesion, IPerfilUsuario, IGestionarCuenta {
     private final AutenticacionMgr mgr = new AutenticacionMgr();
@@ -66,9 +66,9 @@ public class AuthService implements IRegistro, ISesion, IPerfilUsuario, IGestion
         mgr.eliminarCuentaUsuario(correo);
     }
 
-    
+    // Devuelve un objeto Usuario (subclase) usando UsuarioFactory a partir del email
+    public modelo.Usuario obtenerUsuarioPorEmail(String email) {
+        return mgr.obtenerUsuarioPorEmail(email);
+    }
 
-    
-
-    
 }
