@@ -126,8 +126,20 @@ public class EventCLI {
                     realizarEvento.crearEvento(titulo, fechaRealizacion, categoria, entradas, direccion, politicas);
                     break;
                 case "2":
-                    System.out.println("Introduzca el id del evento a modificar: ");
-                    int idEvento = Integer.parseInt(sc.nextLine());
+                    // Mostrar listado de eventos antes de pedir el ID
+                    List<Evento> eventosModificar = realizarEvento.obtenerEventos();
+                    if (eventosModificar == null || eventosModificar.isEmpty()) {
+                        System.out.println("No hay eventos disponibles para modificar.");
+                        break;
+                    }
+                    System.out.println("Eventos disponibles:");
+                    for (Evento ev : eventosModificar) {
+                        System.out.println("ID: " + ev.getIdEvento() + ", Título: " + ev.getTitulo() + ", Fecha: " + ev.getFechaRealizacion());
+                    }
+                    System.out.println("Introduzca el id del evento a modificar (0 para volver): ");
+                    String inputIdEvento = sc.nextLine();
+                    if ("0".equals(inputIdEvento)) break;
+                    int idEvento = Integer.parseInt(inputIdEvento);
                     System.out.println("Titulo: ");
                     titulo = sc.nextLine();
                     System.out.println("Categoria: ");
@@ -188,15 +200,7 @@ public class EventCLI {
      */
     private void mostrarSubmenuComprarEntrada(Evento eventoSeleccionado) {
         System.out.println("\n--- Menú Comprar Entrada ---\n");
-        System.out.println("Cantidad de entradas a comprar:");
-        int cantidadEntradas;
-        try {
-            cantidadEntradas = Integer.parseInt(sc.nextLine());
-        } catch (NumberFormatException e) {
-            System.out.println("Cantidad no válida.");
-            return;
-        }
-        // Cargar la lista de entradas actualizada desde el JSON
+        // Cargar la lista de entradas actualizadas desde el JSON
         List<Entrada> entradasActualizadas;
         try {
             entradasActualizadas = eventoSeleccionado.cargarEntradasDesdeJson();
@@ -205,18 +209,62 @@ public class EventCLI {
             e.printStackTrace();
             return;
         }
-        int disponibles = 0;
+        // Mostrar tipos de entrada disponibles y sus cantidades
+        java.util.Map<String, Integer> tiposDisponibles = new java.util.HashMap<>();
         for (Entrada entrada : entradasActualizadas) {
             if (!"Vendida".equals(entrada.getEstadoEntrada())) {
-                disponibles++;
+                tiposDisponibles.put(entrada.getTipoEntrada(), tiposDisponibles.getOrDefault(entrada.getTipoEntrada(), 0) + 1);
             }
         }
-        if (disponibles < cantidadEntradas) {
-            System.out.println("No hay suficientes entradas disponibles para el evento " + eventoSeleccionado.getTitulo());
-            System.out.println("Entradas disponibles: " + disponibles);
+        if (tiposDisponibles.isEmpty()) {
+            System.out.println("No hay entradas disponibles para este evento.");
             return;
         }
-        double precioTotal = eventoSeleccionado.getMaxPrice() * cantidadEntradas;
+        System.out.println("Tipos de entrada disponibles:");
+        int idxTipo = 1;
+        java.util.List<String> tipos = new java.util.ArrayList<>();
+        for (String tipo : tiposDisponibles.keySet()) {
+            System.out.println(idxTipo + ". " + tipo + " (" + tiposDisponibles.get(tipo) + ")");
+            tipos.add(tipo);
+            idxTipo++;
+        }
+        System.out.println("0. Volver");
+        int opcionTipo = -1;
+        while (opcionTipo < 0 || opcionTipo > tipos.size()) {
+            System.out.print("Seleccione el tipo de entrada: ");
+            try {
+                opcionTipo = Integer.parseInt(sc.nextLine());
+            } catch (NumberFormatException e) {
+                opcionTipo = -1;
+            }
+            if (opcionTipo == 0) return;
+            if (opcionTipo < 1 || opcionTipo > tipos.size()) {
+                System.out.println("Opción no válida. Intente de nuevo.");
+            }
+        }
+        String tipoSeleccionado = tipos.get(opcionTipo - 1);
+        int maxDisponibles = tiposDisponibles.get(tipoSeleccionado);
+        int cantidadEntradas = 0;
+        while (cantidadEntradas < 1 || cantidadEntradas > maxDisponibles) {
+            System.out.print("¿Cuántas entradas de tipo '" + tipoSeleccionado + "' desea comprar? (máx " + maxDisponibles + ", 0 para volver): ");
+            try {
+                cantidadEntradas = Integer.parseInt(sc.nextLine());
+            } catch (NumberFormatException e) {
+                cantidadEntradas = 0;
+            }
+            if (cantidadEntradas == 0) return;
+            if (cantidadEntradas < 1 || cantidadEntradas > maxDisponibles) {
+                System.out.println("Cantidad no válida. Intente de nuevo.");
+            }
+        }
+        double precioUnitario = 0;
+        for (Entrada entrada : entradasActualizadas) {
+            if (tipoSeleccionado.equals(entrada.getTipoEntrada())) {
+                precioUnitario = entrada.getPrecio();
+                break;
+            }
+        }
+        double precioTotal = precioUnitario * cantidadEntradas;
         System.out.println("\nPrecio total: " + precioTotal + "€\n");
         // Opciones de método de pago
         String[] metodos = {"Tarjeta", "Bizum", "PayPal"};
@@ -224,23 +272,25 @@ public class EventCLI {
         for (int i = 0; i < metodos.length; i++) {
             System.out.println((i + 1) + ". " + metodos[i]);
         }
-        int opcionPago = 0;
-        while (opcionPago < 1 || opcionPago > metodos.length) {
+        System.out.println("0. Volver");
+        int opcionPago = -1;
+        while (opcionPago < 0 || opcionPago > metodos.length) {
             System.out.print("Opción: ");
             try {
                 opcionPago = Integer.parseInt(sc.nextLine());
             } catch (NumberFormatException e) {
-                opcionPago = 0;
+                opcionPago = -1;
             }
+            if (opcionPago == 0) return;
             if (opcionPago < 1 || opcionPago > metodos.length) {
                 System.out.println("Opción no válida. Intente de nuevo.");
             }
         }
         String metodoPago = metodos[opcionPago - 1];
-        System.out.println("Datos recogidos: " + cantidadEntradas + " entradas compradas para el evento " + eventoSeleccionado.getTitulo() + " por un total de " + precioTotal + "€ con el método de pago " + metodoPago);
+        System.out.println("Datos recogidos: " + cantidadEntradas + " entradas de tipo '" + tipoSeleccionado + "' compradas para el evento " + eventoSeleccionado.getTitulo() + " por un total de " + precioTotal + "€ con el método de pago " + metodoPago);
         List<Entrada> entradasParaUsuario = new ArrayList<>();
         for (Entrada entrada : entradasActualizadas) {
-            if (!"Vendida".equals(entrada.getEstadoEntrada())) {
+            if (!"Vendida".equals(entrada.getEstadoEntrada()) && tipoSeleccionado.equals(entrada.getTipoEntrada())) {
                 entradasParaUsuario.add(entrada);
                 if (entradasParaUsuario.size() == cantidadEntradas) break;
             }
@@ -283,7 +333,11 @@ public class EventCLI {
             String opcion = sc.nextLine();
             switch (opcion) {
                 case "1":
-                    String entradas = gestionarVenta.mostrarEntradasAdquiridas(email);
+                    try {
+                        eventoSeleccionado.setListaEntradas(eventoSeleccionado.cargarEntradasDesdeJson());
+                    } catch (Exception e) {
+                        System.out.println("Error al recargar las entradas: " + e.getMessage());
+                    }
                     System.out.println("Entradas asociadas a este evento:");
                     for (Entrada entrada : eventoSeleccionado.getListEntradas()) {
                         if (email.equals(entrada.getCorreoAsociado())) {
@@ -292,32 +346,84 @@ public class EventCLI {
                     }
                     break;
                 case "2":
-                    System.out.println("ID de la entrada a poner en reventa:");
-                    int idEntradaReventa = Integer.parseInt(sc.nextLine());
-                    System.out.println("Precio de reventa:");
-                    double precioReventa = Double.parseDouble(sc.nextLine());
+                    System.out.println("ID de la entrada a poner en reventa (0 para volver):");
+                    String inputReventa = sc.nextLine();
+                    if ("0".equals(inputReventa)) break;
+                    int idEntradaReventa = Integer.parseInt(inputReventa);
+                    System.out.println("Precio de reventa (0 para volver):");
+                    String inputPrecio = sc.nextLine();
+                    if ("0".equals(inputPrecio)) break;
+                    double precioReventa = Double.parseDouble(inputPrecio);
                     boolean publicada = gestionarVenta.publicarEntradaEnVenta(idEntradaReventa, precioReventa);
                     if (publicada) {
+                        try {
+                            eventoSeleccionado.setListaEntradas(eventoSeleccionado.cargarEntradasDesdeJson());
+                            eventoSeleccionado.guardarEventoActualizado();
+                        } catch (Exception e) {
+                            System.out.println("Error al actualizar el evento tras poner en reventa: " + e.getMessage());
+                        }
                         System.out.println("Entrada puesta en reventa correctamente.");
                     } else {
                         System.out.println("No se pudo poner la entrada en reventa (verifica el ID y el precio máximo permitido).");
                     }
                     break;
                 case "3":
-                    System.out.println("ID de la entrada en reventa a modificar:");
-                    int idEntradaMod = Integer.parseInt(sc.nextLine());
-                    System.out.println("Nuevo precio de reventa:");
-                    double nuevoPrecio = Double.parseDouble(sc.nextLine());
+                    // Mostrar solo las entradas en reventa del usuario para este evento antes de modificar
+                    List<Entrada> entradasReventaMod = new ArrayList<>();
+                    for (Entrada entrada : eventoSeleccionado.getListEntradas()) {
+                        if (email.equals(entrada.getCorreoAsociado()) && "En Reventa".equalsIgnoreCase(entrada.getEstadoEntrada())) {
+                            entradasReventaMod.add(entrada);
+                        }
+                    }
+                    if (entradasReventaMod.isEmpty()) {
+                        System.out.println("No tienes entradas en reventa para este evento.");
+                        break;
+                    }
+                    System.out.println("Entradas en reventa para modificar:");
+                    for (Entrada entrada : entradasReventaMod) {
+                        System.out.println("ID: " + entrada.getIdEntrada() + ", Tipo: " + entrada.getTipoEntrada() + ", Precio: " + entrada.getPrecio() + "€, Estado: " + entrada.getEstadoEntrada());
+                    }
+                    System.out.println("ID de la entrada en reventa a modificar (0 para volver):");
+                    String inputMod = sc.nextLine();
+                    if ("0".equals(inputMod)) break;
+                    int idEntradaMod = Integer.parseInt(inputMod);
+                    System.out.println("Nuevo precio de reventa (0 para volver):");
+                    String inputNuevoPrecio = sc.nextLine();
+                    if ("0".equals(inputNuevoPrecio)) break;
+                    double nuevoPrecio = Double.parseDouble(inputNuevoPrecio);
                     boolean modificado = gestionarVenta.modificarVenta(idEntradaMod, nuevoPrecio);
                     if (modificado) {
+                        try {
+                            eventoSeleccionado.setListaEntradas(eventoSeleccionado.cargarEntradasDesdeJson());
+                            eventoSeleccionado.guardarEventoActualizado();
+                        } catch (Exception e) {
+                            System.out.println("Error al actualizar el evento tras modificar reventa: " + e.getMessage());
+                        }
                         System.out.println("Precio de reventa modificado correctamente.");
                     } else {
                         System.out.println("No se pudo modificar el precio (verifica el ID y que la entrada esté en reventa).");
                     }
                     break;
                 case "4":
-                    System.out.println("ID de la entrada en reventa a cancelar:");
-                    int idEntradaElim = Integer.parseInt(sc.nextLine());
+                    // Mostrar solo las entradas en reventa del usuario para este evento
+                    List<Entrada> entradasReventa = new ArrayList<>();
+                    for (Entrada entrada : eventoSeleccionado.getListEntradas()) {
+                        if (email.equals(entrada.getCorreoAsociado()) && "En Reventa".equalsIgnoreCase(entrada.getEstadoEntrada())) {
+                            entradasReventa.add(entrada);
+                        }
+                    }
+                    if (entradasReventa.isEmpty()) {
+                        System.out.println("No tienes entradas en reventa para este evento.");
+                        break;
+                    }
+                    System.out.println("Entradas en reventa:");
+                    for (Entrada entrada : entradasReventa) {
+                        System.out.println("ID: " + entrada.getIdEntrada() + ", Tipo: " + entrada.getTipoEntrada() + ", Precio: " + entrada.getPrecio() + "€, Estado: " + entrada.getEstadoEntrada());
+                    }
+                    System.out.println("ID de la entrada en reventa a cancelar (0 para volver):");
+                    String inputElim = sc.nextLine();
+                    if ("0".equals(inputElim)) break;
+                    int idEntradaElim = Integer.parseInt(inputElim);
                     boolean eliminado = gestionarVenta.eliminarVenta(idEntradaElim);
                     if (eliminado) {
                         System.out.println("Reventa cancelada, la entrada vuelve a estar en tu poder.");

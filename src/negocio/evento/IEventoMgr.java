@@ -19,7 +19,6 @@ public class IEventoMgr extends IEventoMgt {
 
     private static final String USUARIO_JSON = "usuarios.json";
     private static final String EVENTOS_JSON = "eventos.json";
-    private static final String ENTRADAS_JSON = "entradas.json";
 
     public IEventoMgr() {
         try {
@@ -28,9 +27,6 @@ public class IEventoMgr extends IEventoMgt {
             }
             if (!Files.exists(Paths.get(EVENTOS_JSON))) {
                 Files.write(Paths.get(EVENTOS_JSON), "[]".getBytes());
-            }
-            if (!Files.exists(Paths.get(ENTRADAS_JSON))) {
-                Files.write(Paths.get(ENTRADAS_JSON), "[]".getBytes());
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -58,43 +54,8 @@ public class IEventoMgr extends IEventoMgt {
     public Entrada generarEntradaUsuario(Entrada entradaAdquirida, String correoUsuario) {
         entradaAdquirida.setCorreoAsociado(correoUsuario);
         entradaAdquirida.setEstadoEntrada("Vendida");
-        actualizarEntradaEnJson(entradaAdquirida);
         actualizarEntradaEnEventoJson(entradaAdquirida);
         return entradaAdquirida;
-    }
-
-    // Método auxiliar para actualizar una entrada en entradas.json
-    private void actualizarEntradaEnJson(Entrada entrada) {
-        try {
-            String contenido = Files.readString(Paths.get(ENTRADAS_JSON));
-            JSONArray entradasArray = new JSONArray(contenido);
-            boolean updated = false;
-            for (int i = 0; i < entradasArray.length(); i++) {
-                JSONObject entradaJson = entradasArray.getJSONObject(i);
-                if (entradaJson.getInt("idEntrada") == entrada.getIdEntrada() && entradaJson.getInt("idEvento") == entrada.getIdEvento()) {
-                    entradaJson.put("correo", entrada.getCorreoAsociado());
-                    entradaJson.put("estadoEntrada", entrada.getEstadoEntrada());
-                    updated = true;
-                    break;
-                }
-            }
-            if (!updated) {
-                // Si no existe, la añadimos
-                JSONObject nuevaEntrada = new JSONObject();
-                nuevaEntrada.put("idEntrada", entrada.getIdEntrada());
-                nuevaEntrada.put("idEvento", entrada.getIdEvento());
-                nuevaEntrada.put("precio", entrada.getPrecio());
-                nuevaEntrada.put("tipoEntrada", entrada.getTipoEntrada());
-                nuevaEntrada.put("estadoEntrada", entrada.getEstadoEntrada());
-                nuevaEntrada.put("correo", entrada.getCorreoAsociado());
-                entradasArray.put(nuevaEntrada);
-            }
-            try (FileWriter writer = new FileWriter(ENTRADAS_JSON)) {
-                writer.write(entradasArray.toString(4));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     // Método auxiliar para actualizar la entrada en el array de entradas del evento en eventos.json
@@ -141,36 +102,34 @@ public class IEventoMgr extends IEventoMgt {
     @Override
     public String mostrarEntradasAdquiridas(String correo) {
         List<Entrada> entradasUsuario = new ArrayList<>();
-
         try {
-            String contenido = Files.readString(Paths.get(ENTRADAS_JSON));
-            JSONArray entradasArray = new JSONArray(contenido);
-
-            for (int i = 0; i < entradasArray.length(); i++) {
-                JSONObject entradaJson = entradasArray.getJSONObject(i);
-                if (correo.equalsIgnoreCase(entradaJson.optString("correo"))) {
-                    Entrada entrada = new Entrada(
-                            entradaJson.getInt("idEntrada"),
-                            entradaJson.getInt("idEvento"),
-                            entradaJson.getString("tipoEntrada"),
-                            entradaJson.getDouble("precio")
-                    );
-                    entrada.setEstadoEntrada(entradaJson.getString("estadoEntrada"));
-                    entrada.setCorreoAsociado(entradaJson.getString("correo"));
-                    entradasUsuario.add(entrada);
+            String contenido = Files.readString(Paths.get(EVENTOS_JSON));
+            JSONArray eventosArray = new JSONArray(contenido);
+            for (int i = 0; i < eventosArray.length(); i++) {
+                JSONObject eventoJson = eventosArray.getJSONObject(i);
+                JSONArray entradasEvento = eventoJson.getJSONArray("entradas");
+                for (int j = 0; j < entradasEvento.length(); j++) {
+                    JSONObject entradaJson = entradasEvento.getJSONObject(j);
+                    if (correo.equalsIgnoreCase(entradaJson.optString("correoAsociado"))) {
+                        Entrada entrada = new Entrada(
+                                entradaJson.getInt("idEntrada"),
+                                entradaJson.getInt("idEvento"),
+                                entradaJson.getString("tipoEntrada"),
+                                entradaJson.getDouble("precio")
+                        );
+                        entrada.setEstadoEntrada(entradaJson.getString("estadoEntrada"));
+                        entrada.setCorreoAsociado(entradaJson.getString("correoAsociado"));
+                        entradasUsuario.add(entrada);
+                    }
                 }
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        // Imprimir en consola y devolver como String
         StringBuilder sb = new StringBuilder();
         for (Entrada entrada : entradasUsuario) {
             sb.append(entrada).append("\n");
         }
-
         return sb.toString();
     }
 
@@ -199,112 +158,99 @@ public class IEventoMgr extends IEventoMgt {
     @Override
     public boolean publicarEntradaEnVenta(int idEntrada, double precio) {
         try {
-            String contenido = Files.readString(Paths.get(ENTRADAS_JSON));
-            JSONArray entradasArray = new JSONArray(contenido);
-
-            for (int i = 0; i < entradasArray.length(); i++) {
-                JSONObject entradaJson = entradasArray.getJSONObject(i);
-
-                if (entradaJson.getInt("idEntrada") == idEntrada) {
-                    int idEvento = entradaJson.getInt("idEvento");
-
-                    // Validar precio
-                    if (!comprobarPrecio(idEvento, precio)) {
-                        return false;
+            String contenido = Files.readString(Paths.get(EVENTOS_JSON));
+            JSONArray eventosArray = new JSONArray(contenido);
+            for (int i = 0; i < eventosArray.length(); i++) {
+                JSONObject eventoJson = eventosArray.getJSONObject(i);
+                JSONArray entradasEvento = eventoJson.getJSONArray("entradas");
+                for (int j = 0; j < entradasEvento.length(); j++) {
+                    JSONObject entradaJson = entradasEvento.getJSONObject(j);
+                    if (entradaJson.getInt("idEntrada") == idEntrada) {
+                        int idEvento = entradaJson.getInt("idEvento");
+                        // Validar precio
+                        if (!comprobarPrecio(idEvento, precio)) {
+                            return false;
+                        }
+                        // Cambiar estado y precio
+                        entradaJson.put("estadoEntrada", "En Reventa");
+                        entradaJson.put("precio", precio);
+                        // Guardar el nuevo array en el fichero
+                        try (FileWriter writer = new FileWriter(EVENTOS_JSON)) {
+                            writer.write(eventosArray.toString(4));
+                        }
+                        return true;
                     }
-
-                    // Cambiar estado y precio
-                    entradaJson.put("estadoEntrada", "En Reventa");
-                    entradaJson.put("precio", precio);
-
-                    // Guardar el nuevo array en el fichero
-                    try (FileWriter writer = new FileWriter(ENTRADAS_JSON)) {
-                        writer.write(entradasArray.toString(4)); // pretty print
-                    }
-
-                    return true;
                 }
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return false; // entrada no encontrada o error
     }
 
     @Override
     public boolean modificarVenta(int idEntrada, double precio) {
         try {
-            String contenido = Files.readString(Paths.get(ENTRADAS_JSON));
-            JSONArray entradasArray = new JSONArray(contenido);
-
-            for (int i = 0; i < entradasArray.length(); i++) {
-                JSONObject entradaJson = entradasArray.getJSONObject(i);
-
-                if (entradaJson.getInt("idEntrada") == idEntrada) {
-
-                    String estado = entradaJson.getString("estadoEntrada");
-                    if (!"En Reventa".equalsIgnoreCase(estado)) {
-                        return false; // Solo modificar si está en reventa
+            String contenido = Files.readString(Paths.get(EVENTOS_JSON));
+            JSONArray eventosArray = new JSONArray(contenido);
+            for (int i = 0; i < eventosArray.length(); i++) {
+                JSONObject eventoJson = eventosArray.getJSONObject(i);
+                JSONArray entradasEvento = eventoJson.getJSONArray("entradas");
+                for (int j = 0; j < entradasEvento.length(); j++) {
+                    JSONObject entradaJson = entradasEvento.getJSONObject(j);
+                    if (entradaJson.getInt("idEntrada") == idEntrada) {
+                        String estado = entradaJson.getString("estadoEntrada");
+                        if (!"En Reventa".equalsIgnoreCase(estado)) {
+                            return false; // Solo modificar si está en reventa
+                        }
+                        int idEvento = entradaJson.getInt("idEvento");
+                        if (!comprobarPrecio(idEvento, precio)) {
+                            return false; // Precio no válido
+                        }
+                        // Modificar precio
+                        entradaJson.put("precio", precio);
+                        // Guardar los cambios en el JSON
+                        try (FileWriter writer = new FileWriter(EVENTOS_JSON)) {
+                            writer.write(eventosArray.toString(4));
+                        }
+                        return true; // Modificado correctamente
                     }
-
-                    int idEvento = entradaJson.getInt("idEvento");
-                    if (!comprobarPrecio(idEvento, precio)) {
-                        return false; // Precio no válido
-                    }
-
-                    // Modificar precio
-                    entradaJson.put("precio", precio);
-
-                    // Guardar los cambios en el JSON
-                    try (FileWriter writer = new FileWriter(ENTRADAS_JSON)) {
-                        writer.write(entradasArray.toString(4)); // formato legible
-                    }
-
-                    return true; // Modificado correctamente
                 }
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return false; // No encontrada o error
     }
 
     @Override
     public boolean eliminarVenta(int idEntrada) {
         try {
-            String contenido = Files.readString(Paths.get(ENTRADAS_JSON));
-            JSONArray entradasArray = new JSONArray(contenido);
-
-            for (int i = 0; i < entradasArray.length(); i++) {
-                JSONObject entradaJson = entradasArray.getJSONObject(i);
-
-                if (entradaJson.getInt("idEntrada") == idEntrada) {
-
-                    String estado = entradaJson.getString("estadoEntrada");
-                    if (!"En Reventa".equalsIgnoreCase(estado)) {
-                        return false; // Solo se puede eliminar si está en reventa
+            String contenido = Files.readString(Paths.get(EVENTOS_JSON));
+            JSONArray eventosArray = new JSONArray(contenido);
+            for (int i = 0; i < eventosArray.length(); i++) {
+                JSONObject eventoJson = eventosArray.getJSONObject(i);
+                JSONArray entradasEvento = eventoJson.getJSONArray("entradas");
+                for (int j = 0; j < entradasEvento.length(); j++) {
+                    JSONObject entradaJson = entradasEvento.getJSONObject(j);
+                    if (entradaJson.getInt("idEntrada") == idEntrada) {
+                        String estado = entradaJson.getString("estadoEntrada");
+                        if (!"En Reventa".equalsIgnoreCase(estado)) {
+                            return false; // Solo se puede cancelar si está en reventa
+                        }
+                        // Cambiar estado a Vendida
+                        entradaJson.put("estadoEntrada", "Vendida");
+                        // Guardar los cambios
+                        try (FileWriter writer = new FileWriter(EVENTOS_JSON)) {
+                            writer.write(eventosArray.toString(4));
+                        }
+                        return true; // Cancelación correcta
                     }
-
-                    // Cambiar estado a Vendida
-                    entradaJson.put("estadoEntrada", "Vendida");
-
-                    // Guardar los cambios
-                    try (FileWriter writer = new FileWriter(ENTRADAS_JSON)) {
-                        writer.write(entradasArray.toString(4));
-                    }
-
-                    return true; // Eliminación (cambio de estado) correcta
                 }
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return false; // Entrada no encontrada o error
     }
     
@@ -343,7 +289,6 @@ public class IEventoMgr extends IEventoMgt {
                 Entrada entrada = new Entrada(i, nuevoIdEvento, tipoEntrada, precio);
                 nuevasEntradas.add(entrada);
             }
-            // sc.close(); // Eliminar el cierre del Scanner sc.close(); para no cerrar System.in
             entradas = nuevasEntradas;
             // --- FIN NUEVO ---
             // Calcular maxPrice a partir de las entradas (por ejemplo el mayor precio)
@@ -369,7 +314,7 @@ public class IEventoMgr extends IEventoMgt {
                 JSONObject entradaJson = new JSONObject();
                 entradaJson.put("idEntrada", e.getIdEntrada());
                 entradaJson.put("idEvento", nuevoIdEvento);
-                entradaJson.put("correo", e.getCorreoAsociado());
+                entradaJson.put("correoAsociado", e.getCorreoAsociado());
                 entradaJson.put("tipoEntrada", e.getTipoEntrada());
                 entradaJson.put("estadoEntrada", e.getEstadoEntrada());
                 entradaJson.put("precio", e.getPrecio());
@@ -383,28 +328,6 @@ public class IEventoMgr extends IEventoMgt {
             // Guardar eventos actualizados
             try (FileWriter writer = new FileWriter(EVENTOS_JSON)) {
                 writer.write(eventosArray.toString(4));
-            }
-
-            // Leer entradas existentes
-            String entradasContenido = Files.readString(Paths.get(ENTRADAS_JSON));
-            JSONArray entradasArray = new JSONArray(entradasContenido);
-
-            // Añadir entradas nuevas al array (asignando el idEvento correcto)
-            for (Entrada e : entradas) {
-                JSONObject entradaJson = new JSONObject();
-                entradaJson.put("idEntrada", e.getIdEntrada());
-                entradaJson.put("idEvento", nuevoIdEvento);
-                entradaJson.put("correo", e.getCorreoAsociado());
-                entradaJson.put("tipoEntrada", e.getTipoEntrada());
-                entradaJson.put("estadoEntrada", e.getEstadoEntrada());
-                entradaJson.put("precio", e.getPrecio());
-
-                entradasArray.put(entradaJson);
-            }
-
-            // Guardar entradas actualizadas
-            try (FileWriter writer = new FileWriter(ENTRADAS_JSON)) {
-                writer.write(entradasArray.toString(4));
             }
 
             return true;
@@ -445,7 +368,7 @@ public class IEventoMgr extends IEventoMgt {
                         JSONObject entradaJson = new JSONObject();
                         entradaJson.put("idEntrada", e.getIdEntrada());
                         entradaJson.put("idEvento", idEventoModificar);
-                        entradaJson.put("correo", e.getCorreoAsociado());
+                        entradaJson.put("correoAsociado", e.getCorreoAsociado());
                         entradaJson.put("tipoEntrada", e.getTipoEntrada());
                         entradaJson.put("estadoEntrada", e.getEstadoEntrada());
                         entradaJson.put("precio", e.getPrecio());
@@ -464,36 +387,6 @@ public class IEventoMgr extends IEventoMgt {
             // Guardar eventos actualizados
             try (FileWriter writer = new FileWriter(EVENTOS_JSON)) {
                 writer.write(eventosArray.toString(4));
-            }
-
-            // Leer entradas existentes
-            String entradasContenido = Files.readString(Paths.get(ENTRADAS_JSON));
-            JSONArray entradasArray = new JSONArray(entradasContenido);
-
-            // Eliminar entradas existentes del evento modificado
-            JSONArray nuevasEntradasArray = new JSONArray();
-            for (int i = 0; i < entradasArray.length(); i++) {
-                JSONObject entradaJson = entradasArray.getJSONObject(i);
-                if (entradaJson.getInt("idEvento") != idEventoModificar) {
-                    nuevasEntradasArray.put(entradaJson);
-                }
-            }
-
-            // Añadir entradas nuevas (pasadas en el parámetro)
-            for (Entrada e : entradas) {
-                JSONObject entradaJson = new JSONObject();
-                entradaJson.put("idEntrada", e.getIdEntrada());
-                entradaJson.put("idEvento", idEventoModificar);
-                entradaJson.put("correo", e.getCorreoAsociado());
-                entradaJson.put("tipoEntrada", e.getTipoEntrada());
-                entradaJson.put("estadoEntrada", e.getEstadoEntrada());
-                entradaJson.put("precio", e.getPrecio());
-                nuevasEntradasArray.put(entradaJson);
-            }
-
-            // Guardar entradas actualizadas
-            try (FileWriter writer = new FileWriter(ENTRADAS_JSON)) {
-                writer.write(nuevasEntradasArray.toString(4));
             }
 
             return true;
@@ -574,34 +467,26 @@ public class IEventoMgr extends IEventoMgt {
     //ITramitarDevolucion
     @Override
     public double procesarDevolucion(int idEvento) {
-    double totalDevolucion = 0.0;
-
+        double totalDevolucion = 0.0;
         try {
-            String contenidoEntradas = Files.readString(Paths.get(ENTRADAS_JSON));
-            JSONArray entradasArray = new JSONArray(contenidoEntradas);
-
-            int entradasADevolver = 0;
-
-            for (int i = 0; i < entradasArray.length(); i++) {
-                JSONObject entrada = entradasArray.getJSONObject(i);
-
-                if (entrada.getInt("idEvento") == idEvento) {
-                    String estado = entrada.getString("estadoEntrada");
-
-                    // Solo devolvemos dinero de entradas ya vendidas o en reventa
-                    if (estado.equalsIgnoreCase("Vendida") || estado.equalsIgnoreCase("En Reventa")) {
-                        double precio = entrada.getDouble("precio");
-                        totalDevolucion += precio;
-                        entradasADevolver++;
+            String contenido = Files.readString(Paths.get(EVENTOS_JSON));
+            JSONArray eventosArray = new JSONArray(contenido);
+            for (int i = 0; i < eventosArray.length(); i++) {
+                JSONObject eventoJson = eventosArray.getJSONObject(i);
+                if (eventoJson.getInt("idEvento") == idEvento) {
+                    JSONArray entradasEvento = eventoJson.getJSONArray("entradas");
+                    for (int j = 0; j < entradasEvento.length(); j++) {
+                        JSONObject entradaJson = entradasEvento.getJSONObject(j);
+                        String estado = entradaJson.getString("estadoEntrada");
+                        if (estado.equalsIgnoreCase("Vendida") || estado.equalsIgnoreCase("En Reventa")) {
+                            double precio = entradaJson.getDouble("precio");
+                            totalDevolucion += precio;
+                        }
                     }
+                    break;
                 }
             }
-
-            System.out.println("Entradas a devolver: " + entradasADevolver);
-            System.out.println("Total de devolución: " + totalDevolucion + "€");
-
             return totalDevolucion;
-
         } catch (IOException e) {
             System.err.println("Error al procesar devoluciones: " + e.getMessage());
             return -1;
@@ -623,10 +508,8 @@ public class IEventoMgr extends IEventoMgt {
             // 1. Leer eventos y eliminar el evento con el ID indicado
             String contenidoEventos = Files.readString(Paths.get(EVENTOS_JSON));
             JSONArray eventosArray = new JSONArray(contenidoEventos);
-
             boolean eventoEncontrado = false;
             JSONArray nuevosEventos = new JSONArray();
-
             for (int i = 0; i < eventosArray.length(); i++) {
                 JSONObject evento = eventosArray.getJSONObject(i);
                 if (evento.getInt("idEvento") == idEvento) {
@@ -636,67 +519,19 @@ public class IEventoMgr extends IEventoMgt {
                     nuevosEventos.put(evento);
                 }
             }
-
             if (!eventoEncontrado) {
                 System.out.println("No se encontró ningún evento con ID " + idEvento + ".");
                 return false;
             }
-
             // 2. Guardar los eventos sin el evento eliminado
             try (FileWriter eventosWriter = new FileWriter(EVENTOS_JSON)) {
                 eventosWriter.write(nuevosEventos.toString(4));
             }
-
-            // 3. Leer entradas y eliminar las asociadas al evento eliminado
-            String contenidoEntradas = Files.readString(Paths.get(ENTRADAS_JSON));
-            JSONArray entradasArray = new JSONArray(contenidoEntradas);
-            JSONArray nuevasEntradas = new JSONArray();
-
-            for (int i = 0; i < entradasArray.length(); i++) {
-                JSONObject entrada = entradasArray.getJSONObject(i);
-                if (entrada.getInt("idEvento") != idEvento) {
-                    nuevasEntradas.put(entrada);
-                }
-            }
-
-            // 4. Guardar las entradas sin las del evento eliminado
-            try (FileWriter entradasWriter = new FileWriter(ENTRADAS_JSON)) {
-                entradasWriter.write(nuevasEntradas.toString(4));
-            }
-
-            System.out.println("Evento y entradas asociadas eliminados correctamente.");
+            System.out.println("Evento eliminado correctamente.");
             return true;
-
         } catch (IOException e) {
-            System.err.println("Error al eliminar el evento y sus entradas: " + e.getMessage());
+            System.err.println("Error al eliminar el evento: " + e.getMessage());
             return false;
-        }
-    }
-
-    
-
-    // Método auxiliar para guardar una entrada en el JSON
-    private void guardarEntradaEnJson(Entrada entrada) {
-        try {
-            String contenido = Files.readString(Paths.get(ENTRADAS_JSON));
-            JSONArray entradasArray = new JSONArray(contenido);
-
-            JSONObject nuevaEntrada = new JSONObject();
-            nuevaEntrada.put("idEntrada", entrada.getIdEntrada());
-            nuevaEntrada.put("idEvento", entrada.getIdEvento());
-            nuevaEntrada.put("precio", entrada.getPrecio());
-            nuevaEntrada.put("tipoEntrada", entrada.getTipoEntrada());
-            nuevaEntrada.put("estadoEntrada", entrada.getEstadoEntrada());
-            nuevaEntrada.put("correo", entrada.getCorreoAsociado());
-
-            entradasArray.put(nuevaEntrada);
-
-            FileWriter writer = new FileWriter(ENTRADAS_JSON);
-            writer.write(entradasArray.toString(4)); // pretty print
-            writer.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 

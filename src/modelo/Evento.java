@@ -177,8 +177,8 @@ public class Evento{
             if (eventoJson.getInt("idEvento") == this.getIdEvento()) {
                 // Actualiza los campos del evento
                 eventoJson.put("titulo", this.getTitulo());
-                // Formatea la fecha a yyyy-MM-dd HH:mm:ss
-                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                // Formatea la fecha a yyyy-MM-dd'T'HH:mm:ss (la T es literal, debe ir entre comillas simples)
+                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
                 String fechaFormateada = sdf.format(this.getFechaRealizacion());
                 eventoJson.put("fechaRealizacion", fechaFormateada);
                 eventoJson.put("categoria", this.getCategoria());
@@ -186,18 +186,19 @@ public class Evento{
                 eventoJson.put("politicas", this.getPoliticas());
                 eventoJson.put("maxPrice", this.getMaxPrice());
 
-                // Actualiza las entradas
+                // Actualiza las entradas (todas las propiedades)
                 JSONArray entradasArray = new JSONArray();
                 for (Entrada entrada : this.getListEntradas()) {
                     JSONObject entradaJson = new JSONObject();
                     entradaJson.put("idEntrada", entrada.getIdEntrada());
+                    entradaJson.put("idEvento", entrada.getIdEvento());
+                    entradaJson.put("tipoEntrada", entrada.getTipoEntrada());
+                    entradaJson.put("precio", entrada.getPrecio());
                     entradaJson.put("estadoEntrada", entrada.getEstadoEntrada());
                     entradaJson.put("correoAsociado", entrada.getCorreoAsociado());
-                    // ...otros campos de Entrada...
                     entradasArray.put(entradaJson);
                 }
                 eventoJson.put("entradas", entradasArray);
-
                 break;
             }
         }
@@ -205,6 +206,12 @@ public class Evento{
         // Guarda el array actualizado en el archivo
         try (FileWriter writer = new FileWriter(path)) {
             writer.write(eventosArray.toString(4)); // pretty print
+        }
+
+        // Borra el fichero entradas.json si existe
+        java.nio.file.Path entradasPath = java.nio.file.Paths.get("entradas.json");
+        if (java.nio.file.Files.exists(entradasPath)) {
+            java.nio.file.Files.delete(entradasPath);
         }
     }
     /**

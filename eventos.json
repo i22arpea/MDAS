@@ -3,19 +3,40 @@
         "politicas": "No se permite reingreso. Prohibido grabar.",
         "fechaRealizacion": "2025-06-10T20:00:00",
         "entradas": [
-            1,
-            2
+            {
+                "precio": 80,
+                "idEvento": 1,
+                "correoAsociado": "",
+                "tipoEntrada": "General",
+                "estadoEntrada": "En Venta",
+                "idEntrada": 1
+            },
+            {
+                "precio": 120,
+                "idEvento": 1,
+                "correoAsociado": "",
+                "tipoEntrada": "VIP",
+                "estadoEntrada": "En Venta",
+                "idEntrada": 2
+            }
         ],
         "idEvento": 1,
         "categoria": "Música",
         "direccion": "Auditorio Nacional, Madrid",
         "titulo": "Concierto Primavera",
-        "maxPrice": 80
+        "maxPrice": 120
     },
     {
         "politicas": "Entrada libre. Menores acompañados.",
         "fechaRealizacion": "2025-07-01T10:00:00",
-        "entradas": [3],
+        "entradas": [{
+            "precio": 0,
+            "idEvento": 2,
+            "correoAsociado": "",
+            "tipoEntrada": "General",
+            "estadoEntrada": "En Venta",
+            "idEntrada": 3
+        }],
         "idEvento": 2,
         "categoria": "Cultura",
         "direccion": "Parque del Retiro, Madrid",
@@ -26,39 +47,54 @@
         "politicas": "No se permite el uso de móviles.",
         "fechaRealizacion": "2025-08-15T19:30:00",
         "entradas": [
-            4,
-            5
+            {
+                "precio": 50,
+                "idEvento": 3,
+                "correoAsociado": "",
+                "tipoEntrada": "General",
+                "estadoEntrada": "En Venta",
+                "idEntrada": 4
+            },
+            {
+                "precio": 90,
+                "idEvento": 3,
+                "correoAsociado": "",
+                "tipoEntrada": "Palco",
+                "estadoEntrada": "En Venta",
+                "idEntrada": 5
+            }
         ],
         "idEvento": 3,
         "categoria": "Teatro",
         "direccion": "Teatro Real, Madrid",
         "titulo": "Obra de Teatro: Hamlet",
-        "maxPrice": 50
+        "maxPrice": 90
     },
     {
-        "politicas": "hjhjhg",
-        "fechaRealizacion": "2025-05-21T00:19:08",
+        "politicas": "Política estándar.",
+        "fechaRealizacion": "2025-09-10T21:00:00",
         "entradas": [
             {
-                "correoAsociado": "",
-                "estadoEntrada": "En Venta",
-                "idEntrada": 1
+                "precio": 17,
+                "idEvento": 4,
+                "correoAsociado": "lolo@asta.com",
+                "tipoEntrada": "General",
+                "estadoEntrada": "Vendida",
+                "idEntrada": 6
             },
             {
+                "precio": 60,
+                "idEvento": 4,
                 "correoAsociado": "",
+                "tipoEntrada": "VIP",
                 "estadoEntrada": "En Venta",
-                "idEntrada": 2
-            },
-            {
-                "correoAsociado": "",
-                "estadoEntrada": "En Venta",
-                "idEntrada": 3
+                "idEntrada": 7
             }
         ],
-        "idEvento": 5,
-        "categoria": "fsfd",
-        "direccion": "fefgr",
-        "titulo": "ololo",
-        "maxPrice": 100
+        "idEvento": 4,
+        "categoria": "Cine",
+        "direccion": "Cines Callao, Madrid",
+        "titulo": "Estreno de Película",
+        "maxPrice": 60
     }
 ]
